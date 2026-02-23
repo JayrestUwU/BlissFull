@@ -253,6 +253,10 @@
   .changelog-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; }
   .changelog-version { font-family: 'Minecraft', monospace; font-size: 11px; color: var(--accent2); background: rgba(123,47,255,0.1); padding: 2px 6px; border-radius: 3px; white-space: nowrap; margin-top: 2px; }
   .changelog-text { color: var(--text2); line-height: 1.5; }
+  .docs-admin-bar { background: rgba(123,47,255,0.06); border-bottom: 1px solid rgba(123,47,255,0.2); padding: 10px 40px; display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 60px; z-index: 50; }
+  .doc-section-actions { display: flex; gap: 8px; margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .doc-order-btn { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border); padding: 6px 10px; font-family: 'Minecraft', monospace; font-size: 12px; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+  .doc-order-btn:hover { color: var(--text); border-color: var(--border2); }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
@@ -658,260 +662,15 @@
 </div>
 
 <div id="docs" class="page">
-  <div class="docs-layout">
-    <aside class="docs-sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Введение</div>
-        <a class="sidebar-link active" onclick="showDoc('doc-concept')">Концепция сервера</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Мир</div>
-        <a class="sidebar-link" onclick="showDoc('doc-capital')">Столица</a>
-        <a class="sidebar-link" onclick="showDoc('doc-pvp')">ПВП и дикие земли</a>
-        <a class="sidebar-link" onclick="showDoc('doc-barrier')">Всемирный барьер</a>
-        <a class="sidebar-link" onclick="showDoc('doc-events')">Система ивентов</a>
-        <a class="sidebar-link" onclick="showDoc('doc-mechanics')">Механики мира</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Общество</div>
-        <a class="sidebar-link" onclick="showDoc('doc-licenses')">Лицензии и роли</a>
-        <a class="sidebar-link" onclick="showDoc('doc-economy')">Экономика</a>
-        <a class="sidebar-link" onclick="showDoc('doc-factions')">Войны фракций</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Справочник</div>
-        <a class="sidebar-link" onclick="showDoc('doc-commands')">Команды игрока</a>
-        <a class="sidebar-link" onclick="showDoc('doc-rules')">Правила</a>
-      </div>
-    </aside>
-    <div class="docs-content">
-      <div class="doc-section active" id="doc-concept">
-        <h1>Концепция сервера</h1>
-        <p class="doc-lead">BlissFullReloaded — Vanilla+ сервер с элементами лёгкого RP, упором на PvE, кооперацию, экономику и постепенное исследование мира. Все игроки начинают в одном месте — Столице — и расширяют мир совместными усилиями.</p>
-        <h2>Ключевые принципы</h2>
-        <ul>
-          <li>Один стартовый город (Столица) — точка входа и центр жизни сервера</li>
-          <li>Мир расширяется постепенно — через общий банк XP всех игроков</li>
-          <li>В Столице — мир и закон. За её пределами — дикие земли, полное ПВП</li>
-          <li>Кооперация выгоднее одиночной игры</li>
-          <li>Социальные конфликты решаются через игровые органы власти</li>
-          <li>Администрация следит за читами, не вмешивается в социальные споры</li>
-        </ul>
-        <div class="info-box"><strong>Главная идея:</strong> каждая смерть имеет цену для всего сервера. Чем лучше выживает каждый — тем больше открытого мира для всех.</div>
-      </div>
-      <div class="doc-section" id="doc-capital">
-        <h1>Столица</h1>
-        <p class="doc-lead">Единственный город на старте сезона. Центр торговли, власти и безопасности. Все новые игроки появляются здесь.</p>
-        <h2>Инфраструктура</h2>
-        <table class="doc-table">
-          <tr><th>Объект</th><th>Описание</th></tr>
-          <tr><td>Мэрия</td><td>Управление городом, выдача разрешений, тендеры. Ответственный — Мэр</td></tr>
-          <tr><td>Суд</td><td>Разбор нарушений и конфликтов. Ответственный — Судья</td></tr>
-          <tr><td>Склады</td><td>Городские ресурсы. Под управлением Мэра</td></tr>
-          <tr><td>Рынок</td><td>Основная торговая площадь. Бочки-магазины, доска объявлений</td></tr>
-          <tr><td>Доска найма</td><td>Заказы на добычу ресурсов, охоту на мобов и игроков</td></tr>
-        </table>
-        <h2>Выбор при старте</h2>
-        <div class="zone-grid">
-          <div class="zone-card safe"><h4>🏠 Жить в Столице</h4><ul><li>✔ Защита базы от рейда</li><li>✔ Рядом с рынком и доской найма</li><li>✔ В центре событий</li><li>✖ Плата за защиту</li><li>✖ Строительство по правилам Мэра</li></ul></div>
-          <div class="zone-card danger"><h4>🌲 Уйти в дикие земли</h4><ul><li>✔ Полная свобода строительства</li><li>✔ Нет платы за проживание</li><li>✖ База не защищена — могут рейдить</li><li>✖ Могут убить в любой момент</li><li>✖ Нет гарантий безопасности</li></ul></div>
-        </div>
-        <h2>Плата за защиту</h2>
-        <ul>
-          <li>Игрок платит не за участок, а за защиту которую обеспечивает Столица</li>
-          <li>Размер и условия оплаты устанавливает Мэр</li>
-          <li>Игрок в любой момент может покинуть Столицу</li>
-          <li>Вернуться под защиту — снова договориться с Мэром и оплатить</li>
-        </ul>
-      </div>
-      <div class="doc-section" id="doc-pvp">
-        <h1>ПВП и дикие земли</h1>
-        <p class="doc-lead">За пределами Столицы действуют законы дикого мира. Полное ПВП без ограничений.</p>
-        <h2>Зоны</h2>
-        <table class="doc-table">
-          <tr><th>Зона</th><th>Правила</th></tr>
-          <tr><td>Столица</td><td>Мирная зона. ПВП запрещено. Базы защищены от рейда</td></tr>
-          <tr><td>Дикие земли</td><td>Полное ПВП — убийство и рейд баз разрешены</td></tr>
-          <tr><td>ПВП арены</td><td>Добровольные схватки внутри или рядом со Столицей</td></tr>
-        </table>
-        <h2>Правила диких земель</h2>
-        <ul>
-          <li>Убийство игроков — разрешено без предупреждения</li>
-          <li>Рейд базы — разрешён: можно ломать постройки, красть ресурсы</li>
-          <li>Трофеи убитого игрока достаются победителю</li>
-          <li>Объединение в группы для совместных рейдов — приветствуется</li>
-        </ul>
-        <h2>Доска найма</h2>
-        <p>На главной площади Столицы — публичная доска объявлений.</p>
-        <table class="doc-table">
-          <tr><th>Тип заказа</th><th>Пример</th></tr>
-          <tr><td>Добыча ресурсов</td><td>«Нужно 3 стака железа | Оплата: 10 бутылок опыта»</td></tr>
-          <tr><td>Охота на мобов</td><td>«Убить 20 скелетов на 5000+ блоков | Оплата: алмазы»</td></tr>
-          <tr><td>Охота на игрока</td><td>«Цель: [ник] | Награда: [предмет]»</td></tr>
-          <tr><td>Охрана и эскорт</td><td>Сопровождение игрока в опасных землях</td></tr>
-        </table>
-      </div>
-      <div class="doc-section" id="doc-barrier">
-        <h1>Всемирный барьер</h1>
-        <p class="doc-lead">Центральная механика сервера. Радиус мирового барьера зависит от суммарного XP в общем банке.</p>
-        <h2>Принцип работы</h2>
-        <table class="doc-table">
-          <tr><th>Действие</th><th>Эффект</th></tr>
-          <tr><td>Получение опыта</td><td>XP записывается в общий банк → барьер расширяется</td></tr>
-          <tr><td>Смерть игрока</td><td>Весь накопленный опыт отнимается из банка → барьер сужается</td></tr>
-          <tr><td>Зачарование / Переименование</td><td>Трата XP — барьер НЕ уменьшается</td></tr>
-          <tr><td>Трейд обмен (BioMarket)</td><td>Органика → XP в банк</td></tr>
-        </table>
-        <h2>Система Эпох</h2>
-        <ul><li>Начальная эпоха — только Верхний мир</li><li>Средние эпохи — открывается Ад</li><li>Поздние эпохи — открывается Энд</li></ul>
-        <h2>Статические барьеры (данжи)</h2>
-        <ul><li>Каждый данж окружён локальным барьером</li><li>Открытие — оплата фиксированным XP (частями или полностью)</li><li>Войти нельзя никаким способом до оплаты</li></ul>
-        <div class="info-box warning"><strong>Важно:</strong> умышленный суицид с целью сужения барьера — технический бан без предупреждения.</div>
-      </div>
-      <div class="doc-section" id="doc-events">
-        <h1>Система ивентов</h1>
-        <p class="doc-lead">Ивенты запускаются автоматически и влияют на работу барьера и игровой процесс.</p>
-        <h2>Все ивенты</h2>
-        <div class="event-grid">
-          <div class="event-row"><div class="ev-name">🟡 Золотая Лихорадка</div><div class="ev-desc">Опыт в банке умножается на 3х</div><div class="ev-time">35 сек</div></div>
-          <div class="event-row"><div class="ev-name">🔴 Теневое Эмбарго</div><div class="ev-desc">XP перестаёт поступать в банк, но при смерти отнимается</div><div class="ev-time">30 мин</div></div>
-          <div class="event-row"><div class="ev-name">💀 Жертвоприношение</div><div class="ev-desc">За каждую смерть банк получает +500 XP</div><div class="ev-time">60 сек</div></div>
-          <div class="event-row"><div class="ev-name">👹 Охота на монстра</div><div class="ev-desc">Усиленный монстр рядом с рандомным игроком. Награда: 1000–2500 XP</div><div class="ev-time">5 мин</div></div>
-          <div class="event-row"><div class="ev-name">🌀 Нестабильность</div><div class="ev-desc">Барьер «дышит» — сужается и расширяется поочерёдно</div><div class="ev-time">60 сек</div></div>
-          <div class="event-row"><div class="ev-name">⚠️ Коллапс</div><div class="ev-desc">Барьер сужается 5 XP/сек. Нужно активно фармить опыт</div><div class="ev-time">45 сек</div></div>
-          <div class="event-row"><div class="ev-name">🏘 Деревенский Рейд</div><div class="ev-desc">Запускается если игрок в деревне >1 часа</div><div class="ev-time">До победы</div></div>
-        </div>
-      </div>
-      <div class="doc-section" id="doc-mechanics">
-        <h1>Механики мира</h1>
-        <p class="doc-lead">Уникальные правила, которые делают выживание сложнее и интереснее.</p>
-        <h2>Динамическая сложность</h2>
-        <ul><li>Мобы сильнее с удалением от спавна: ×1.25 HP на каждые 1000 блоков</li><li>Паук на 10 000 блоков — более 200 HP</li><li>HP моба отображается над головой при ударе</li></ul>
-        <h2>Клаустрофобия</h2>
-        <ul><li>Долгое пребывание под землёй — дебаффы: Тошнота, Слепота, Медлительность, Слабость</li><li>При входе на сервер игрок с шансом уже может иметь фобию</li></ul>
-        <h2>Навигация</h2>
-        <ul><li>F3 отключён — координаты видны только с компасом в руке</li><li>При наведении на игрока — ник и лицензия</li><li>В Аду — ники и лицензии искажаются</li></ul>
-        <h2>Прочее</h2>
-        <table class="doc-table">
-          <tr><th>Механика</th><th>Описание</th></tr>
-          <tr><td>Замедленный рост</td><td>Зерновые, ягоды и деревья растут значительно медленнее ванили</td></tr>
-          <tr><td>Молнии и броня</td><td>Гроза + медная броня = шанс удара молнией</td></tr>
-          <tr><td>Портал в Ад</td><td>Минимальный размер рамки — 5×4 блока</td></tr>
-          <tr><td>BioMarket</td><td>Органика (пшеница, морковь, лут с мобов) → XP в банк</td></tr>
-        </table>
-      </div>
-      <div class="doc-section" id="doc-licenses">
-        <h1>Лицензии и роли</h1>
-        <p class="doc-lead">Лицензии дают технические права и обязанности. Получить — через заявку и голосование в Discord.</p>
-        <div class="info-box warning"><strong>Ограничения:</strong> нельзя быть Мэром и Судьёй одновременно. Отсутствие >7 суток без уведомления — лицензия аннулируется.</div>
-        <h2>Роли</h2>
-        <table class="doc-table">
-          <tr><th>Роль</th><th>Права</th><th>Обязанности</th></tr>
-          <tr><td>Мэр</td><td>Разрешения на стройку в спецзонах</td><td>Тендеры, дороги, развитие Столицы</td></tr>
-          <tr><td>Судья</td><td>Префикс [Преступник], штрафы</td><td>Вердикты только по логам Следователя</td></tr>
-          <tr><td>Следователь</td><td><code>/co i</code>, <code>/co near</code></td><td>Сбор улик, нейтралитет</td></tr>
-          <tr><td>Охрана порядка</td><td><code>/freeze</code>, <code>/unfreeze</code></td><td>Задержание до суда</td></tr>
-          <tr><td>Адвокат</td><td>Доступ в зону задержания</td><td>Помощь игрокам, аудит договоров</td></tr>
-          <tr><td>Строитель</td><td><code>/hat</code>, <code>/ec</code></td><td>Заказы Мэра, реставрация</td></tr>
-          <tr><td>Ивент-менеджер</td><td><code>/broadcast</code></td><td>Минимум 1 событие в 2 недели</td></tr>
-        </table>
-      </div>
-      <div class="doc-section" id="doc-economy">
-        <h1>Экономика и торговля</h1>
-        <p class="doc-lead">Живая экономика между игроками. Умные бочки-магазины, онлайн-торги, государственные тендеры.</p>
-        <h2>Умные бочки (SmartBarrel)</h2>
-        <table class="doc-table">
-          <tr><th>Тип</th><th>Описание</th></tr>
-          <tr><td>Магазин</td><td>Один товар, фиксированная цена. Склад 18 слотов + касса. ЛКМ ×1, ПКМ ×16, Shift ×64</td></tr>
-          <tr><td>Бар</td><td>Разные напитки, у каждого своя цена. Склад 54 слота</td></tr>
-          <tr><td>Уникальный</td><td>Как бар, но для любых предметов. Склад 54 слота</td></tr>
-        </table>
-        <h2>Онлайн-торги</h2>
-        <ul><li>Игрок размещает объявление на доске в Столице</li><li>Покупатель связывается в чате и договаривается об условиях</li><li>Обмен лично — встречаются и передают предметы напрямую</li><li>Споры при мошенничестве — разбирает Судья при наличии доказательств</li></ul>
-        <h2>Тендеры и кланы</h2>
-        <ul><li>Тендер — официальный заказ от Мэра, условия фиксируются в Discord</li><li>Клан даёт право на коллективные иски и участие в тендерах</li><li>Группа от 3 человек выбирает представителя для переговоров с Мэром</li></ul>
-      </div>
-      <div class="doc-section" id="doc-factions">
-        <h1>Войны городов и фракций</h1>
-        <div class="info-box future"><strong>⚙ Планируемая механика</strong> — будет введена при достаточном онлайне и росте Столицы.</div>
-        <p class="doc-lead">Система городов, фракций и межгородских конфликтов. Стройте города, создавайте союзы, объявляйте войны.</p>
-        <h2>Новые города</h2>
-        <ul><li>Столица — стартовый город, от которого отпочковываются остальные</li><li>Группа игроков может основать новый город за пределами Столицы</li><li>Каждый город имеет своего Мэра, законы и инфраструктуру</li></ul>
-        <h2>Фракции</h2>
-        <ul><li>Фракция — объединение игроков (может включать несколько городов)</li><li>Союзы, торговые договоры, нейтралитет — всё доступно</li><li>Объявление войны — официальная процедура через Discord</li></ul>
-        <h2>Войны и захват</h2>
-        <ul><li>В состоянии войны — полное ПВП между членами враждующих фракций везде на карте</li><li>Структуры (рудники, данжи) можно захватывать у противника</li><li>Мир заключается договором в Discord</li><li>Нейтральные игроки не затрагиваются</li></ul>
-        <h2>Наёмники</h2>
-        <ul><li>Игроки без фракции могут наниматься любой стороне конфликта</li><li>Заказы размещаются на доске найма в Столице</li></ul>
-      </div>
-      <div class="doc-section" id="doc-commands">
-        <h1>Команды игрока</h1>
-        <p class="doc-lead">Полный справочник доступных команд.</p>
-        <h2>Регистрация</h2>
-        <table class="doc-table">
-          <tr><td>/register</td><td>Регистрация при первом входе</td></tr>
-          <tr><td>/login, /l</td><td>Авторизация при каждом входе</td></tr>
-          <tr><td>/changepassword</td><td>Смена пароля</td></tr>
-        </table>
-        <h2>Чат</h2>
-        <table class="doc-table">
-          <tr><td>/msg &lt;ник&gt; &lt;текст&gt;</td><td>Личное сообщение</td></tr>
-          <tr><td>/r &lt;текст&gt;</td><td>Ответить последнему собеседнику</td></tr>
-          <tr><td>/ignore &lt;ник&gt;</td><td>Заблокировать игрока</td></tr>
-          <tr><td>/unignore &lt;ник&gt;</td><td>Снять блок</td></tr>
-          <tr><td>/me &lt;текст&gt;</td><td>Ролевое действие от третьего лица</td></tr>
-        </table>
-        <h2>Быт и эмоции</h2>
-        <table class="doc-table">
-          <tr><td>/sit</td><td>Сесть (или ПКМ по ступеньке)</td></tr>
-          <tr><td>/lay</td><td>Лечь</td></tr>
-          <tr><td>/crawl</td><td>Ползти</td></tr>
-          <tr><td>/bellyflop</td><td>Лечь на животик</td></tr>
-          <tr><td>/Sleeper</td><td>Пропустить ночь</td></tr>
-        </table>
-        <h2>Сундуки и хранилища</h2>
-        <table class="doc-table">
-          <tr><td>/lock</td><td>Заблокировать свой сундук</td></tr>
-          <tr><td>/unlock</td><td>Открыть для общего доступа</td></tr>
-          <tr><td>/trust &lt;ник&gt;</td><td>Добавить доверенного игрока</td></tr>
-        </table>
-        <h2>Скины и визуал</h2>
-        <table class="doc-table">
-          <tr><td>/skin set &lt;ник&gt;</td><td>Скин другого игрока</td></tr>
-          <tr><td>/skin url &lt;ссылка&gt;</td><td>Скин по ссылке</td></tr>
-          <tr><td>/skin clear</td><td>Стандартный скин</td></tr>
-          <tr><td>/skin update</td><td>Обновить скин</td></tr>
-          <tr><td>/hat</td><td>Надеть предмет на голову (Строители)</td></tr>
-          <tr><td>/ec, /enderchest</td><td>Карманный эндер-сундук (Строители)</td></tr>
-        </table>
-        <h2>Алкоголь (Brewery)</h2>
-        <table class="doc-table">
-          <tr><td>/brew help</td><td>Список команд</td></tr>
-          <tr><td>/brew info</td><td>Информация о напитке в руке</td></tr>
-          <tr><td>/brew wakeup</td><td>Выйти из опьянения</td></tr>
-          <tr><td>/brew drain</td><td>Слить жидкость из бочки</td></tr>
-          <tr><td>/brew create</td><td>Создать бочку для варки</td></tr>
-        </table>
-      </div>
-      <div class="doc-section" id="doc-rules">
-        <h1>Правила сервера</h1>
-        <p class="doc-lead">Незнание правил не освобождает от ответственности. Заходя на сервер — вы соглашаетесь с ними.</p>
-        <h2>Поведение</h2>
-        <ul><li>Запрещены оскорбления, пропаганда насилия, экстремизм</li><li>Спам, флуд, злоупотребление CAPS — запрещены</li><li>Никнейм, скин, аватар Discord — без оскорблений</li></ul>
-        <h2>Технические нарушения → Административный бан</h2>
-        <ul><li>Читы: X-Ray, KillAura, Fly и любое ПО с преимуществом</li><li>Дюп предметов, эксплойты барьера, лаг-машины</li><li>Умышленный суицид для сужения барьера</li></ul>
-        <h2>Игровые нарушения → Суд</h2>
-        <ul><li>Гриферство — уничтожение чужих построек в зоне Столицы</li><li>Кража — из защищённых контейнеров в Столице</li><li>Незаконное PvP — убийство без согласия внутри Столицы</li></ul>
-        <h2>Наказания</h2>
-        <table class="doc-table">
-          <tr><th>Нарушение</th><th>Наказание</th></tr>
-          <tr><td>1-е</td><td>Предупреждение</td></tr>
-          <tr><td>2-е</td><td>Мут, кик или ограничение доступа</td></tr>
-          <tr><td>3-е и далее</td><td>Временный или постоянный бан</td></tr>
-          <tr><td>Серьёзные нарушения</td><td>Моментальный бан без предупреждения</td></tr>
-        </table>
-      </div>
+  <div class="docs-admin-bar" id="docsAdminBar" style="display:none">
+    <div class="admin-bar-text">⚙️ Редактирование документации</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-add-news" onclick="openAddDoc()">+ Добавить раздел</button>
     </div>
+  </div>
+  <div class="docs-layout">
+    <aside class="docs-sidebar" id="docsSidebar"></aside>
+    <div class="docs-content" id="docsContent"></div>
   </div>
 </div>
 
@@ -966,10 +725,13 @@
 <script>
   const AUTH_URL = '/auth';
   const NEWS_URL = '/api/news';
+  const DOCS_URL = '/api/docs';
   const TYPE_LABELS = { update:'Обновление', event:'Событие', announce:'Анонс', fix:'Фикс', info:'Инфо' };
 
   let isAdmin = false, editingId = null, cachedNews = [];
+  let cachedDocs = [], editingDocId = null, currentDocId = null;
 
+  // ── NEWS ──────────────────────────────────────────────────────────────
   async function fetchNews() {
     try { const r = await fetch(NEWS_URL); cachedNews = await r.json(); }
     catch(e) { cachedNews = []; }
@@ -999,6 +761,166 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // ── DOCS ──────────────────────────────────────────────────────────────
+  async function fetchDocs() {
+    try { const r = await fetch(DOCS_URL); cachedDocs = await r.json(); }
+    catch(e) { cachedDocs = []; }
+    renderDocs();
+  }
+
+  function renderDocs() {
+    renderDocsSidebar();
+    // Show first or currently active
+    if (cachedDocs.length > 0) {
+      const target = currentDocId && cachedDocs.find(d => d.id === currentDocId)
+        ? currentDocId : cachedDocs[0].id;
+      showDocById(target, false);
+    } else {
+      document.getElementById('docsContent').innerHTML =
+        '<div style="padding:48px 60px;color:var(--text3);font-size:15px;">Разделы ещё не добавлены.</div>';
+    }
+  }
+
+  function renderDocsSidebar() {
+    const sidebar = document.getElementById('docsSidebar');
+    if (!sidebar) return;
+
+    // Group by category
+    const categories = {};
+    cachedDocs.forEach(d => {
+      const cat = d.category || 'Общее';
+      if (!categories[cat]) categories[cat] = [];
+      categories[cat].push(d);
+    });
+
+    sidebar.innerHTML = Object.entries(categories).map(([cat, docs]) => `
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">${escHtml(cat)}</div>
+        ${docs.map(d => `
+          <a class="sidebar-link${currentDocId === d.id ? ' active' : ''}"
+             onclick="showDocById(${d.id})">${escHtml(d.title)}</a>
+        `).join('')}
+      </div>
+    `).join('');
+  }
+
+  function showDocById(id, updateSidebar = true) {
+    currentDocId = id;
+    const doc = cachedDocs.find(d => d.id === id);
+    if (!doc) return;
+
+    const content = document.getElementById('docsContent');
+    content.innerHTML = `
+      <div class="doc-section active">
+        <h1>${escHtml(doc.title)}</h1>
+        ${doc.lead ? `<p class="doc-lead">${escHtml(doc.lead)}</p>` : ''}
+        <div class="doc-body">${renderDocBody(doc.body || '')}</div>
+        ${isAdmin ? `
+          <div class="doc-section-actions">
+            <button class="btn-edit" onclick="openEditDoc(${doc.id})">✏️ Редактировать</button>
+            <button class="btn-danger" onclick="deleteDoc(${doc.id})">🗑 Удалить</button>
+            <button class="doc-order-btn" onclick="moveDoc(${doc.id}, -1)">↑ Выше</button>
+            <button class="doc-order-btn" onclick="moveDoc(${doc.id}, 1)">↓ Ниже</button>
+          </div>` : ''}
+      </div>`;
+
+    if (updateSidebar) renderDocsSidebar();
+  }
+
+  function renderDocBody(text) {
+    // Simple markdown-like renderer for doc body
+    // Supports: ## headings, bullet lists (- item), blank lines as paragraphs
+    if (!text) return '';
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+
+    lines.forEach(line => {
+      const safe = escHtml(line);
+      if (line.startsWith('## ')) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<h2>${escHtml(line.slice(3))}</h2>`;
+      } else if (line.startsWith('- ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${escHtml(line.slice(2))}</li>`;
+      } else if (line.trim() === '') {
+        if (inList) { html += '</ul>'; inList = false; }
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p>${safe}</p>`;
+      }
+    });
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  function openAddDoc() {
+    editingDocId = null;
+    document.getElementById('docFormModalTitle').textContent = '➕ Добавить раздел';
+    document.getElementById('docFormCategory').value = '';
+    document.getElementById('docFormTitle').value = '';
+    document.getElementById('docFormLead').value = '';
+    document.getElementById('docFormBody').value = '';
+    document.getElementById('docModal').classList.add('open');
+    document.getElementById('docFormTitle').focus();
+  }
+
+  function openEditDoc(id) {
+    const doc = cachedDocs.find(d => d.id === id);
+    if (!doc) return;
+    editingDocId = id;
+    document.getElementById('docFormModalTitle').textContent = '✏️ Редактировать раздел';
+    document.getElementById('docFormCategory').value = doc.category || '';
+    document.getElementById('docFormTitle').value = doc.title || '';
+    document.getElementById('docFormLead').value = doc.lead || '';
+    document.getElementById('docFormBody').value = doc.body || '';
+    document.getElementById('docModal').classList.add('open');
+  }
+
+  function closeDocModal() { document.getElementById('docModal').classList.remove('open'); }
+
+  async function saveDocForm() {
+    const category = document.getElementById('docFormCategory').value.trim();
+    const title    = document.getElementById('docFormTitle').value.trim();
+    const lead     = document.getElementById('docFormLead').value.trim();
+    const body     = document.getElementById('docFormBody').value; // preserve newlines
+    if (!title) { alert('Введите заголовок раздела.'); return; }
+    const payload = { category: category || 'Общее', title, lead, body };
+    try {
+      const r = editingDocId !== null
+        ? await fetch(`${DOCS_URL}/${editingDocId}`, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)})
+        : await fetch(DOCS_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      if (r.ok) {
+        const saved = await r.json();
+        if (editingDocId === null && saved.item) currentDocId = saved.item.id;
+        closeDocModal();
+        await fetchDocs();
+      } else alert('Ошибка сохранения');
+    } catch(e) { alert('Ошибка соединения'); }
+  }
+
+  async function deleteDoc(id) {
+    if (!confirm('Удалить этот раздел?')) return;
+    try {
+      const r = await fetch(`${DOCS_URL}/${id}`, {method:'DELETE'});
+      if (r.ok) {
+        if (currentDocId === id) currentDocId = null;
+        await fetchDocs();
+      }
+    } catch(e) { alert('Ошибка удаления'); }
+  }
+
+  async function moveDoc(id, dir) {
+    try {
+      const r = await fetch(`${DOCS_URL}/${id}/move`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({direction: dir})
+      });
+      if (r.ok) await fetchDocs();
+    } catch(e) {}
+  }
+
+  // ── AUTH ──────────────────────────────────────────────────────────────
   function openAdminLogin() {
     document.getElementById('adminLoginModal').classList.add('open');
     document.getElementById('adminPassInput').value = '';
@@ -1019,7 +941,9 @@
       if (d.ok) {
         isAdmin = true; closeAdminLogin();
         document.getElementById('adminBar').style.display = '';
+        document.getElementById('docsAdminBar').style.display = '';
         renderNews();
+        renderDocs();
       } else {
         err.textContent = r.status === 429 ? 'Слишком много попыток, подожди минуту' : 'Неверный пароль';
         err.style.display = 'block';
@@ -1030,8 +954,15 @@
     finally { btn.textContent = 'Войти'; btn.disabled = false; }
   }
 
-  function adminLogout() { isAdmin = false; document.getElementById('adminBar').style.display = 'none'; renderNews(); }
+  function adminLogout() {
+    isAdmin = false;
+    document.getElementById('adminBar').style.display = 'none';
+    document.getElementById('docsAdminBar').style.display = 'none';
+    renderNews();
+    renderDocs();
+  }
 
+  // ── NEWS MODALS ───────────────────────────────────────────────────────
   function openAddNews() {
     editingId = null;
     document.getElementById('newsFormTitle').textContent = '➕ Добавить новость';
@@ -1062,7 +993,7 @@
     const type  = document.getElementById('newsFormType').value;
     const date  = document.getElementById('newsFormDate').value.trim();
     const title = document.getElementById('newsFormTitle2').value.trim();
-    const text  = document.getElementById('newsFormText').value; // не trim — сохраняем форматирование!
+    const text  = document.getElementById('newsFormText').value;
     const tags  = document.getElementById('newsFormTags').value.trim().split(',').map(t=>t.trim()).filter(Boolean);
     if (!title || !text.trim()) { alert('Заполните заголовок и текст.'); return; }
     const payload = { type, typeLabel: TYPE_LABELS[type]||type, date, title, text, tags };
@@ -1081,6 +1012,7 @@
     catch(e) { alert('Ошибка удаления'); }
   }
 
+  // ── PAGE / DOC NAVIGATION ─────────────────────────────────────────────
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -1088,13 +1020,7 @@
     document.getElementById('nav-' + id).classList.add('active');
     window.scrollTo(0, 0);
     if (id === 'news') fetchNews();
-  }
-
-  function showDoc(id) {
-    document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    event.target.classList.add('active');
+    if (id === 'docs') fetchDocs();
   }
 
   function copyIP() {
@@ -1104,6 +1030,7 @@
     setTimeout(() => t.classList.remove('show'), 2000);
   }
 
+  // ── SERVER STATUS ─────────────────────────────────────────────────────
   async function fetchServerStatus() {
     try {
       const r = await fetch('/api/status');
@@ -1140,13 +1067,16 @@
     if (sv)  sv.textContent = version;
   }
 
+  // ── INIT ──────────────────────────────────────────────────────────────
   fetchNews();
+  fetchDocs();
   fetchServerStatus();
   setInterval(fetchServerStatus, 10000);
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       document.getElementById('newsModal').classList.remove('open');
       document.getElementById('adminLoginModal').classList.remove('open');
+      document.getElementById('docModal').classList.remove('open');
     }
   });
 </script>
@@ -1197,6 +1127,37 @@
       <input type="text" class="form-tags-input" id="newsFormTags" placeholder="Тег1, Тег2, Тег3">
     </div>
     <button class="btn-submit" onclick="saveNewsForm()">💾 Сохранить</button>
+  </div>
+</div>
+
+
+<div class="modal-overlay" id="docModal">
+  <div class="modal-box" style="max-width:680px">
+    <div class="modal-title" id="docFormModalTitle">➕ Добавить раздел</div>
+    <button class="modal-close" onclick="closeDocModal()">✕</button>
+    <div class="form-group">
+      <label class="form-label">Категория в сайдбаре</label>
+      <input type="text" class="form-input" id="docFormCategory" placeholder="Например: Мир, Общество, Справочник">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Заголовок раздела</label>
+      <input type="text" class="form-input" id="docFormTitle" placeholder="Название раздела">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Подзаголовок (lead)</label>
+      <input type="text" class="form-input" id="docFormLead" placeholder="Краткое описание раздела под заголовком">
+    </div>
+    <div class="form-group">
+      <label class="form-label" style="margin-bottom:4px">Содержимое раздела</label>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.6;">
+        Поддерживается простая разметка:<br>
+        <code>## Заголовок</code> — подзаголовок h2<br>
+        <code>- Пункт</code> — элемент списка<br>
+        Обычный текст — параграф. Enter = новая строка.
+      </div>
+      <textarea class="form-textarea" id="docFormBody" placeholder="## Основные правила&#10;- Пункт первый&#10;- Пункт второй&#10;&#10;Обычный текст параграфа." style="min-height:200px;font-family:monospace;font-size:13px;tab-size:2;white-space:pre"></textarea>
+    </div>
+    <button class="btn-submit" onclick="saveDocForm()">💾 Сохранить раздел</button>
   </div>
 </div>
 
