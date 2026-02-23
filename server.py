@@ -5,7 +5,7 @@ import time
 from collections import defaultdict
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 load_dotenv()
@@ -16,7 +16,7 @@ ALLOWED_ORIGIN: str      = os.getenv("ALLOWED_ORIGIN", "*")
 PORT: int                = int(os.getenv("PORT", 3000))
 
 # ── App ───────────────────────────────────────────────────────────
-app = Flask(__name__)
+app = Flask(__name__, static_folder=".")
 CORS(app, origins=[ALLOWED_ORIGIN], methods=["POST", "OPTIONS"])
 
 # ── Rate limit (in-memory) ────────────────────────────────────────
@@ -35,6 +35,11 @@ def check_rate_limit(ip: str) -> bool:
     return entry["count"] <= RATE_MAX
 
 # ── Routes ────────────────────────────────────────────────────────
+
+@app.get("/")
+def index():
+    return send_from_directory(".", "index.html")
+
 @app.post("/auth")
 def auth():
     ip = request.headers.get("x-forwarded-for", request.remote_addr).split(",")[0].strip()
