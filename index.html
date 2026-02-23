@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlissFullReloaded — Minecraft сервер</title>
+<link href="https://db.onlinewebfonts.com/c/bf3f245b7cd53caea0cb07d265a64adc?family=Minecraftia+Regular" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Minecraft';
+    src: url('https://db.onlinewebfonts.com/t/bf3f245b7cd53caea0cb07d265a64adc.woff2') format('woff2'),
+         url('https://db.onlinewebfonts.com/t/bf3f245b7cd53caea0cb07d265a64adc.woff') format('woff'),
+         url('https://db.onlinewebfonts.com/t/bf3f245b7cd53caea0cb07d265a64adc.ttf') format('truetype');
+    font-weight: normal;
+  }
+</style>
+<style>
+  :root {
+    --bg: #080c10;
+    --bg2: #0d1117;
+    --bg3: #111820;
+    --card: #0f1620;
+    --border: #1e2d3d;
+    --border2: #243447;
+    --accent: #00d4ff;
+    --accent2: #7b2fff;
+    --accent3: #ff6b35;
+    --gold: #f0c040;
+    --text: #c8d8e8;
+    --text2: #7a9ab8;
+    --text3: #4a6a8a;
+    --green: #00ff88;
+    --red: #ff4455;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --glow2: 0 0 20px rgba(123,47,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Minecraft', 'Minecraftia Regular', monospace;
+    font-weight: 400;
+    overflow-x: hidden;
+    cursor: default;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── SCANLINES ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(8,12,16,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Minecraft', monospace;
+    font-weight: normal;
+    font-size: 16px;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    letter-spacing: 2px;
+    cursor: pointer;
+  }
+
+  .nav-logo span { color: var(--accent2); }
+
+  .nav-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+  }
+
+  .nav-ip {
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    color: var(--green);
+    background: rgba(0,255,136,0.06);
+    border: 1px solid rgba(0,255,136,0.2);
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .nav-ip:hover { background: rgba(0,255,136,0.12); border-color: var(--green); }
+
+  .copy-toast {
+    position: fixed;
+    top: 70px;
+    right: 40px;
+    background: var(--green);
+    color: #000;
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .copy-toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── PAGES ── */
+  .page { display: none; padding-top: 60px; min-height: 100vh; position: relative; z-index: 2; }
+  .page.active { display: block; }
+
+  /* ══════════════════════════════════
+     ГЛАВНАЯ
+  ══════════════════════════════════ */
+  #home {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+  #home.active { display: block; }
+
+  .hero-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100vh;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,212,255,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(123,47,255,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 30% at 20% 60%, rgba(255,107,53,0.04) 0%, transparent 40%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100vh;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, black 0%, transparent 80%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 100px 40px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.25);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(0,255,136,0); }
+  }
+
+  .hero-title {
+    font-family: 'Minecraft', monospace;
+    font-weight: normal;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 1;
+    letter-spacing: -1px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero-title .line1 { color: #fff; }
+  .hero-title .line2 {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text2);
+    max-width: 560px;
+    line-height: 1.7;
+    margin: 24px 0 40px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    padding: 14px 32px;
+    font-family: 'Minecraft', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 24px rgba(0,212,255,0.25);
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,212,255,0.4); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border2);
+    padding: 14px 32px;
+    font-family: 'Minecraft', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.05); }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex;
+    gap: 0;
+    margin-top: 80px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 24px 28px;
+    border-right: 1px solid var(--border);
+    background: rgba(13,17,23,0.8);
+    transition: background 0.2s;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-item:hover { background: rgba(0,212,255,0.04); }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    color: #fff;
+  }
+
+  .stat-value.green { color: var(--green); }
+  .stat-value.blue { color: var(--accent); }
+  .stat-value.purple { color: var(--accent2); }
+  .stat-value.gold { color: var(--gold); }
+
+  /* Feature cards */
+  .features {
+    padding: 80px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 3;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 36px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .section-sub {
+    color: var(--text2);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--card-accent, var(--accent)), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature-card:hover { border-color: var(--border2); transform: translateY(-4px); }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .feature-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 15px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .feature-desc {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* Social section */
+  .socials-section {
+    padding: 60px 40px 100px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 3;
+  }
+
+  .socials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .social-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 28px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    z-index: 4;
+  }
+
+  .social-card:hover { transform: translateY(-3px); }
+  .social-card.discord:hover { border-color: #5865F2; box-shadow: 0 8px 32px rgba(88,101,242,0.2); }
+  .social-card.telegram:hover { border-color: #26A5E4; box-shadow: 0 8px 32px rgba(38,165,228,0.2); }
+  .social-card.tiktok:hover { border-color: #ff0050; box-shadow: 0 8px 32px rgba(255,0,80,0.2); }
+
+  .social-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .social-icon.discord { background: rgba(88,101,242,0.15); }
+  .social-icon.telegram { background: rgba(38,165,228,0.15); }
+  .social-icon.tiktok { background: rgba(255,0,80,0.1); }
+
+  .social-info { flex: 1; }
+
+  .social-name {
+    font-family: 'Minecraft', monospace;
+    font-size: 15px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .social-desc { font-size: 13px; color: var(--text2); }
+
+  .social-arrow { color: var(--text3); font-size: 18px; }
+
+  /* ══════════════════════════════════
+     ДОКУМЕНТАЦИЯ
+  ══════════════════════════════════ */
+  #docs {
+    display: none;
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+  #docs.active { display: flex; }
+
+  .docs-layout {
+    display: flex;
+    width: 100%;
+    min-height: calc(100vh - 60px);
+  }
+
+  .docs-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 32px 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    z-index: 10;
+  }
+
+  .docs-sidebar::-webkit-scrollbar { width: 4px; }
+  .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
+  .docs-sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .sidebar-section {
+    margin-bottom: 8px;
+  }
+
+  .sidebar-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 8px 24px 6px;
+  }
+
+  .sidebar-link {
+    display: block;
+    padding: 7px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,212,255,0.06); }
+
+  .docs-content {
+    flex: 1;
+    padding: 48px 60px;
+    max-width: 900px;
+    overflow-y: auto;
+  }
+
+  .doc-section { display: none; }
+  .doc-section.active { display: block; }
+
+  .doc-section h1 {
+    font-family: 'Minecraft', monospace;
+    font-size: 32px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .doc-section .doc-lead {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-section h2 {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    font-weight: normal;
+    color: #fff;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-section h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 28px 0 12px;
+  }
+
+  .doc-section p {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  .doc-section ul {
+    list-style: none;
+    margin: 0 0 20px;
+  }
+
+  .doc-section ul li {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.6;
+    padding: 5px 0 5px 20px;
+    position: relative;
+  }
+
+  .doc-section ul li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .doc-table th {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .doc-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  .doc-table tr:last-child td { border-bottom: none; }
+  .doc-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .doc-table td:first-child {
+    font-family: 'Minecraft', monospace;
+    font-size: 13px;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+
+  .info-box {
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .info-box.warning {
+    background: rgba(240,192,64,0.06);
+    border-color: rgba(240,192,64,0.25);
+  }
+
+  .info-box.future {
+    background: rgba(123,47,255,0.06);
+    border-color: rgba(123,47,255,0.25);
+  }
+
+  .info-box strong { color: var(--accent); }
+  .info-box.warning strong { color: var(--gold); }
+  .info-box.future strong { color: var(--accent2); }
+
+  .zone-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .zone-card {
+    border-radius: 6px;
+    padding: 20px;
+    border: 1px solid;
+  }
+
+  .zone-card.safe {
+    background: rgba(0,255,136,0.04);
+    border-color: rgba(0,255,136,0.2);
+  }
+
+  .zone-card.danger {
+    background: rgba(255,68,85,0.04);
+    border-color: rgba(255,68,85,0.2);
+  }
+
+  .zone-card h4 {
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 12px;
+  }
+
+  .zone-card.safe h4 { color: var(--green); }
+  .zone-card.danger h4 { color: var(--red); }
+
+  .zone-card ul { margin: 0; }
+  .zone-card ul li { font-size: 13px; }
+
+  .event-grid {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .event-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 110px;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .event-row .ev-name {
+    padding: 12px 16px;
+    background: rgba(13,17,23,0.8);
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+    border-right: 1px solid var(--border);
+  }
+
+  .event-row .ev-desc {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text2);
+    border-right: 1px solid var(--border);
+  }
+
+  .event-row .ev-time {
+    padding: 12px 16px;
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .badge.new { background: rgba(0,255,136,0.15); color: var(--green); }
+  .badge.planned { background: rgba(123,47,255,0.15); color: var(--accent2); }
+  .badge.warning { background: rgba(240,192,64,0.15); color: var(--gold); }
+
+  code {
+    font-family: 'Minecraft', monospace;
+    font-size: 13px;
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  /* ══════════════════════════════════
+     НОВОСТИ
+  ══════════════════════════════════ */
+  #news {
+    display: none;
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+  #news.active { display: block; }
+
+  .news-header {
+    padding: 60px 40px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .news-header h1 {
+    font-family: 'Minecraft', monospace;
+    font-size: 40px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .news-header p { color: var(--text2); font-size: 15px; }
+
+  .news-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .news-list { display: flex; flex-direction: column; gap: 16px; }
+
+  .news-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .news-card::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .news-card.type-update::after { background: var(--accent); }
+  .news-card.type-event::after { background: var(--gold); }
+  .news-card.type-announce::after { background: var(--accent2); }
+
+  .news-card:hover { border-color: var(--border2); transform: translateX(4px); }
+
+  .news-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .news-type {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  .type-update .news-type { background: rgba(0,212,255,0.1); color: var(--accent); }
+  .type-event .news-type { background: rgba(240,192,64,0.1); color: var(--gold); }
+  .type-announce .news-type { background: rgba(123,47,255,0.1); color: var(--accent2); }
+  .type-fix .news-type { background: rgba(0,255,136,0.1); color: var(--green); }
+  .type-info .news-type { background: rgba(200,216,232,0.1); color: var(--text2); }
+  .news-card.type-fix::after { background: var(--green); }
+  .news-card.type-info::after { background: var(--text2); }
+
+  .news-date {
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .news-card h2 {
+    font-family: 'Minecraft', monospace;
+    font-size: 18px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .news-card p {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+
+  .news-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .news-tag {
+    font-size: 11px;
+    color: var(--text3);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* Sidebar */
+  .news-sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+  .sidebar-widget {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .widget-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    font-weight: normal;
+    color: #fff;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .server-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  .status-dot.offline { background: var(--red); animation: none; }
+  .status-dot.loading { background: var(--gold); animation: pulse 1s infinite; }
+
+  .players-online {
+    font-family: 'Minecraft', monospace;
+    font-size: 24px;
+    color: var(--green);
+    font-weight: bold;
+    margin: 8px 0 4px;
+  }
+
+  .players-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+  }
+
+  .players-max {
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* ── ADMIN PANEL ── */
+  .admin-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 44px;
+    height: 44px;
+    background: rgba(123,47,255,0.15);
+    border: 1px solid rgba(123,47,255,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 500;
+    transition: all 0.2s;
+    font-size: 18px;
+    color: var(--accent2);
+  }
+  .admin-fab:hover { background: rgba(123,47,255,0.25); border-color: var(--accent2); }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 32px;
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+  .form-group { margin-bottom: 16px; }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    padding: 10px 14px;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-select { cursor: pointer; }
+
+  .form-tags-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-tags-input:focus { border-color: var(--accent); }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-danger {
+    background: rgba(255,68,85,0.12);
+    color: var(--red);
+    border: 1px solid rgba(255,68,85,0.3);
+    padding: 6px 14px;
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-danger:hover { background: rgba(255,68,85,0.22); }
+
+  .btn-edit {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 6px 14px;
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-edit:hover { background: rgba(0,212,255,0.15); }
+
+  .news-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .admin-bar {
+    background: rgba(123,47,255,0.06);
+    border-bottom: 1px solid rgba(123,47,255,0.2);
+    padding: 10px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .admin-bar-text {
+    font-size: 12px;
+    color: var(--accent2);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .btn-add-news {
+    background: rgba(123,47,255,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(123,47,255,0.35);
+    padding: 7px 18px;
+    font-family: 'Minecraft', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-add-news:hover { background: rgba(123,47,255,0.25); }
+
+  .btn-logout {
+    background: none;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { color: var(--red); border-color: rgba(255,68,85,0.3); }
+
+  .server-ip {
+    font-family: 'Minecraft', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.15);
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .server-ip:hover { background: rgba(0,212,255,0.12); }
+
+  .version-tag {
+    font-family: 'Minecraft', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    background: rgba(255,255,255,0.04);
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  .changelog-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .changelog-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .changelog-version {
+    font-family: 'Minecraft', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    background: rgba(123,47,255,0.1);
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .changelog-text { color: var(--text2); line-height: 1.5; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Bliss<span>Full</span>Reloaded</div>
+  <div class="nav-links">
+    <a onclick="showPage('home')" id="nav-home" class="active">Главная</a>
+    <a onclick="showPage('docs')" id="nav-docs">Документация</a>
+    <a onclick="showPage('news')" id="nav-news">Новости</a>
+  </div>
+  <div class="nav-ip" onclick="copyIP()">blissfull.mc-server.net:25816</div>
+</nav>
+<div class="copy-toast" id="copyToast">✓ IP скопирован!</div>
+
+<!-- ══════════════════════════════════
+     ГЛАВНАЯ
+══════════════════════════════════ -->
+<div id="home" class="page active">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">Сервер онлайн</div>
+    <div class="hero-title">
+      <span class="line1">Vanilla+</span>
+      <span class="line2">BlissFullReloaded</span>
+    </div>
+    <p class="hero-sub">Кооперативное выживание с живой экономикой, системой власти и расширяющимся миром. Каждая смерть имеет цену.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" onclick="showPage('docs')">Документация</a>
+      <a class="btn-outline" onclick="showPage('news')">Новости</a>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-label">Версия</div>
+        <div class="stat-value blue" id="hero-version">1.21.x</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Режим</div>
+        <div class="stat-value">Vanilla+</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Игроков онлайн</div>
+        <div class="stat-value green" id="hero-players">—</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Статус</div>
+        <div class="stat-value green" id="hero-status">Проверка...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features">
+    <div class="section-header">
+      <div class="section-tag">Механики</div>
+      <div class="section-title">Чем живёт сервер</div>
+      <div class="section-sub">Уникальные механики, которые заставляют игроков работать вместе</div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card" style="--card-accent: #00d4ff">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Всемирный барьер</div>
+        <div class="feature-desc">Размер мира зависит от общего опыта всех игроков. Каждая смерть сужает барьер для всех.</div>
+      </div>
+      <div class="feature-card" style="--card-accent: #7b2fff">
+        <div class="feature-icon">🏛</div>
+        <div class="feature-title">Столица и власть</div>
+        <div class="feature-desc">Мэр, Судья, Следователь, Охрана. Живая политическая система внутри игры.</div>
+      </div>
+      <div class="feature-card" style="--card-accent: #ff6b35">
+        <div class="feature-icon">⚔️</div>
+        <div class="feature-title">Полное ПВП</div>
+        <div class="feature-desc">За пределами Столицы — дикие земли. Рейды, убийства, захват территорий.</div>
+      </div>
+      <div class="feature-card" style="--card-accent: #f0c040">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Живая экономика</div>
+        <div class="feature-desc">Умные бочки-магазины, доска найма, торги между игроками, тендеры от Мэра.</div>
+      </div>
+      <div class="feature-card" style="--card-accent: #00ff88">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Система ивентов</div>
+        <div class="feature-desc">Золотая Лихорадка, Коллапс, Жертвоприношение — мир живёт и меняется в реальном времени.</div>
+      </div>
+      <div class="feature-card" style="--card-accent: #ff4455">
+        <div class="feature-icon">🏘</div>
+        <div class="feature-title">Войны фракций</div>
+        <div class="feature-desc">Стройте города, создавайте союзы, объявляйте войны. Политика внутри Minecraft.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Socials -->
+  <div class="socials-section">
+    <div class="section-header">
+      <div class="section-tag">Сообщество</div>
+      <div class="section-title">Присоединяйся</div>
+    </div>
+    <div class="socials-grid">
+      <a href="https://discord.gg/MY32B5hn3q" target="_blank" class="social-card discord">
+        <div class="social-icon discord">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#5865F2"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.08.112 18.1.132 18.11c2.053 1.508 4.041 2.423 5.993 3.03a.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028c1.961-.607 3.95-1.522 6.002-3.03a.077.077 0 0 0 .032-.027c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        </div>
+        <div class="social-info">
+          <div class="social-name">Discord</div>
+          <div class="social-desc">Основное сообщество</div>
+        </div>
+        <div class="social-arrow">›</div>
+      </a>
+      <a href="https://t.me/BlissFullReloaded" target="_blank" class="social-card telegram">
+        <div class="social-icon telegram">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#26A5E4"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </div>
+        <div class="social-info">
+          <div class="social-name">Telegram</div>
+          <div class="social-desc">Новости и обновления</div>
+        </div>
+        <div class="social-arrow">›</div>
+      </a>
+      <a href="https://www.tiktok.com/@jayrest29" target="_blank" class="social-card tiktok">
+        <div class="social-icon tiktok">
+          <svg width="24" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+        </div>
+        <div class="social-info">
+          <div class="social-name">TikTok</div>
+          <div class="social-desc">Видео с сервера</div>
+        </div>
+        <div class="social-arrow">›</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ДОКУМЕНТАЦИЯ
+══════════════════════════════════ -->
+<div id="docs" class="page">
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Введение</div>
+        <a class="sidebar-link active" onclick="showDoc('doc-concept')">Концепция сервера</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Мир</div>
+        <a class="sidebar-link" onclick="showDoc('doc-capital')">Столица</a>
+        <a class="sidebar-link" onclick="showDoc('doc-pvp')">ПВП и дикие земли</a>
+        <a class="sidebar-link" onclick="showDoc('doc-barrier')">Всемирный барьер</a>
+        <a class="sidebar-link" onclick="showDoc('doc-events')">Система ивентов</a>
+        <a class="sidebar-link" onclick="showDoc('doc-mechanics')">Механики мира</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Общество</div>
+        <a class="sidebar-link" onclick="showDoc('doc-licenses')">Лицензии и роли</a>
+        <a class="sidebar-link" onclick="showDoc('doc-economy')">Экономика</a>
+        <a class="sidebar-link" onclick="showDoc('doc-factions')">Войны фракций</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Справочник</div>
+        <a class="sidebar-link" onclick="showDoc('doc-commands')">Команды игрока</a>
+        <a class="sidebar-link" onclick="showDoc('doc-rules')">Правила</a>
+      </div>
+    </aside>
+
+    <div class="docs-content">
+
+      <!-- Концепция -->
+      <div class="doc-section active" id="doc-concept">
+        <h1>Концепция сервера</h1>
+        <p class="doc-lead">BlissFullReloaded — Vanilla+ сервер с элементами лёгкого RP, упором на PvE, кооперацию, экономику и постепенное исследование мира. Все игроки начинают в одном месте — Столице — и расширяют мир совместными усилиями.</p>
+        <h2>Ключевые принципы</h2>
+        <ul>
+          <li>Один стартовый город (Столица) — точка входа и центр жизни сервера</li>
+          <li>Мир расширяется постепенно — через общий банк XP всех игроков</li>
+          <li>В Столице — мир и закон. За её пределами — дикие земли, полное ПВП</li>
+          <li>Кооперация выгоднее одиночной игры</li>
+          <li>Социальные конфликты решаются через игровые органы власти</li>
+          <li>Администрация следит за читами, не вмешивается в социальные споры</li>
+        </ul>
+        <div class="info-box">
+          <strong>Главная идея:</strong> каждая смерть имеет цену для всего сервера. Чем лучше выживает каждый — тем больше открытого мира для всех.
+        </div>
+      </div>
+
+      <!-- Столица -->
+      <div class="doc-section" id="doc-capital">
+        <h1>Столица</h1>
+        <p class="doc-lead">Единственный город на старте сезона. Центр торговли, власти и безопасности. Все новые игроки появляются здесь.</p>
+        <h2>Инфраструктура</h2>
+        <table class="doc-table">
+          <tr><th>Объект</th><th>Описание</th></tr>
+          <tr><td>Мэрия</td><td>Управление городом, выдача разрешений, тендеры. Ответственный — Мэр</td></tr>
+          <tr><td>Суд</td><td>Разбор нарушений и конфликтов. Ответственный — Судья</td></tr>
+          <tr><td>Склады</td><td>Городские ресурсы. Под управлением Мэра</td></tr>
+          <tr><td>Рынок</td><td>Основная торговая площадь. Бочки-магазины, доска объявлений</td></tr>
+          <tr><td>Доска найма</td><td>Заказы на добычу ресурсов, охоту на мобов и игроков</td></tr>
+        </table>
+        <h2>Выбор при старте</h2>
+        <div class="zone-grid">
+          <div class="zone-card safe">
+            <h4>🏠 Жить в Столице</h4>
+            <ul>
+              <li>✔ Защита базы от рейда</li>
+              <li>✔ Рядом с рынком и доской найма</li>
+              <li>✔ В центре событий</li>
+              <li>✖ Плата за защиту</li>
+              <li>✖ Строительство по правилам Мэра</li>
+            </ul>
+          </div>
+          <div class="zone-card danger">
+            <h4>🌲 Уйти в дикие земли</h4>
+            <ul>
+              <li>✔ Полная свобода строительства</li>
+              <li>✔ Нет платы за проживание</li>
+              <li>✖ База не защищена — могут рейдить</li>
+              <li>✖ Могут убить в любой момент</li>
+              <li>✖ Нет гарантий безопасности</li>
+            </ul>
+          </div>
+        </div>
+        <h2>Плата за защиту</h2>
+        <ul>
+          <li>Игрок платит не за участок, а за защиту которую обеспечивает Столица</li>
+          <li>Размер и условия оплаты устанавливает Мэр</li>
+          <li>Игрок в любой момент может покинуть Столицу</li>
+          <li>Вернуться под защиту — снова договориться с Мэром и оплатить</li>
+        </ul>
+      </div>
+
+      <!-- ПВП -->
+      <div class="doc-section" id="doc-pvp">
+        <h1>ПВП и дикие земли</h1>
+        <p class="doc-lead">За пределами Столицы действуют законы дикого мира. Полное ПВП без ограничений.</p>
+        <h2>Зоны</h2>
+        <table class="doc-table">
+          <tr><th>Зона</th><th>Правила</th></tr>
+          <tr><td>Столица</td><td>Мирная зона. ПВП запрещено. Базы защищены от рейда</td></tr>
+          <tr><td>Дикие земли</td><td>Полное ПВП — убийство и рейд баз разрешены</td></tr>
+          <tr><td>ПВП арены</td><td>Добровольные схватки внутри или рядом со Столицей</td></tr>
+        </table>
+        <h2>Правила диких земель</h2>
+        <ul>
+          <li>Убийство игроков — разрешено без предупреждения</li>
+          <li>Рейд базы — разрешён: можно ломать постройки, красть ресурсы</li>
+          <li>Трофеи убитого игрока достаются победителю</li>
+          <li>Объединение в группы для совместных рейдов — приветствуется</li>
+        </ul>
+        <h2>Доска найма</h2>
+        <p>На главной площади Столицы — публичная доска объявлений.</p>
+        <table class="doc-table">
+          <tr><th>Тип заказа</th><th>Пример</th></tr>
+          <tr><td>Добыча ресурсов</td><td>«Нужно 3 стака железа | Оплата: 10 бутылок опыта»</td></tr>
+          <tr><td>Охота на мобов</td><td>«Убить 20 скелетов на 5000+ блоков | Оплата: алмазы»</td></tr>
+          <tr><td>Охота на игрока</td><td>«Цель: [ник] | Награда: [предмет]»</td></tr>
+          <tr><td>Охрана и эскорт</td><td>Сопровождение игрока в опасных землях</td></tr>
+        </table>
+      </div>
+
+      <!-- Барьер -->
+      <div class="doc-section" id="doc-barrier">
+        <h1>Всемирный барьер</h1>
+        <p class="doc-lead">Центральная механика сервера. Радиус мирового барьера зависит от суммарного XP в общем банке.</p>
+        <h2>Принцип работы</h2>
+        <table class="doc-table">
+          <tr><th>Действие</th><th>Эффект</th></tr>
+          <tr><td>Получение опыта</td><td>XP записывается в общий банк → барьер расширяется</td></tr>
+          <tr><td>Смерть игрока</td><td>Весь накопленный опыт отнимается из банка → барьер сужается</td></tr>
+          <tr><td>Зачарование / Переименование</td><td>Трата XP — барьер НЕ уменьшается</td></tr>
+          <tr><td>Трейд обмен (BioMarket)</td><td>Органика → XP в банк</td></tr>
+        </table>
+        <h2>Система Эпох</h2>
+        <ul>
+          <li>Начальная эпоха — только Верхний мир</li>
+          <li>Средние эпохи — открывается Ад</li>
+          <li>Поздние эпохи — открывается Энд</li>
+        </ul>
+        <h2>Статические барьеры (данжи)</h2>
+        <ul>
+          <li>Каждый данж окружён локальным барьером</li>
+          <li>Открытие — оплата фиксированным XP (частями или полностью)</li>
+          <li>Войти нельзя никаким способом до оплаты</li>
+        </ul>
+        <div class="info-box warning">
+          <strong>Важно:</strong> умышленный суицид с целью сужения барьера — технический бан без предупреждения.
+        </div>
+      </div>
+
+      <!-- Ивенты -->
+      <div class="doc-section" id="doc-events">
+        <h1>Система ивентов</h1>
+        <p class="doc-lead">Ивенты запускаются автоматически и влияют на работу барьера и игровой процесс.</p>
+        <h2>Все ивенты</h2>
+        <div class="event-grid">
+          <div class="event-row">
+            <div class="ev-name">🟡 Золотая Лихорадка</div>
+            <div class="ev-desc">Опыт в банке умножается на 3х</div>
+            <div class="ev-time">35 сек</div>
+          </div>
+          <div class="event-row">
+            <div class="ev-name">🔴 Теневое Эмбарго</div>
+            <div class="ev-desc">XP перестаёт поступать в банк, но при смерти отнимается</div>
+            <div class="ev-time">30 мин</div>
+          </div>
+          <div class="event-row">
+            <div class="ev-name">💀 Жертвоприношение</div>
+            <div class="ev-desc">За каждую смерть банк получает +500 XP</div>
+            <div class="ev-time">60 сек</div>
+          </div>
+          <div class="event-row">
+            <div class="ev-name">👹 Охота на монстра</div>
+            <div class="ev-desc">Усиленный монстр рядом с рандомным игроком. Награда: 1000–2500 XP</div>
+            <div class="ev-time">5 мин</div>
+          </div>
+          <div class="event-row">
+            <div class="ev-name">🌀 Нестабильность</div>
+            <div class="ev-desc">Барьер «дышит» — сужается и расширяется поочерёдно</div>
+            <div class="ev-time">60 сек</div>
+          </div>
+          <div class="event-row">
+            <div class="ev-name">⚠️ Коллапс</div>
+            <div class="ev-desc">Барьер сужается 5 XP/сек. Нужно активно фармить опыт</div>
+            <div class="ev-time">45 сек</div>
+          </div>
+          <div class="event-row">
+            <div class="ev-name">🏘 Деревенский Рейд</div>
+            <div class="ev-desc">Запускается если игрок в деревне >1 часа</div>
+            <div class="ev-time">До победы</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Механики -->
+      <div class="doc-section" id="doc-mechanics">
+        <h1>Механики мира</h1>
+        <p class="doc-lead">Уникальные правила, которые делают выживание сложнее и интереснее.</p>
+        <h2>Динамическая сложность</h2>
+        <ul>
+          <li>Мобы сильнее с удалением от спавна: ×1.25 HP на каждые 1000 блоков</li>
+          <li>Паук на 10 000 блоков — более 200 HP</li>
+          <li>HP моба отображается над головой при ударе</li>
+        </ul>
+        <h2>Клаустрофобия</h2>
+        <ul>
+          <li>Долгое пребывание под землёй — дебаффы: Тошнота, Слепота, Медлительность, Слабость</li>
+          <li>При входе на сервер игрок с шансом уже может иметь фобию</li>
+        </ul>
+        <h2>Навигация</h2>
+        <ul>
+          <li>F3 отключён — координаты видны только с компасом в руке</li>
+          <li>При наведении на игрока — ник и лицензия</li>
+          <li>В Аду — ники и лицензии искажаются</li>
+        </ul>
+        <h2>Прочее</h2>
+        <table class="doc-table">
+          <tr><th>Механика</th><th>Описание</th></tr>
+          <tr><td>Замедленный рост</td><td>Зерновые, ягоды и деревья растут значительно медленнее ванили</td></tr>
+          <tr><td>Молнии и броня</td><td>Гроза + медная броня = шанс удара молнией</td></tr>
+          <tr><td>Портал в Ад</td><td>Минимальный размер рамки — 5×4 блока</td></tr>
+          <tr><td>BioMarket</td><td>Органика (пшеница, морковь, лут с мобов) → XP в банк</td></tr>
+        </table>
+      </div>
+
+      <!-- Лицензии -->
+      <div class="doc-section" id="doc-licenses">
+        <h1>Лицензии и роли</h1>
+        <p class="doc-lead">Лицензии дают технические права и обязанности. Получить — через заявку и голосование в Discord.</p>
+        <div class="info-box warning">
+          <strong>Ограничения:</strong> нельзя быть Мэром и Судьёй одновременно. Отсутствие >7 суток без уведомления — лицензия аннулируется.
+        </div>
+        <h2>Роли</h2>
+        <table class="doc-table">
+          <tr><th>Роль</th><th>Права</th><th>Обязанности</th></tr>
+          <tr><td>Мэр</td><td>Разрешения на стройку в спецзонах</td><td>Тендеры, дороги, развитие Столицы</td></tr>
+          <tr><td>Судья</td><td>Префикс [Преступник], штрафы</td><td>Вердикты только по логам Следователя</td></tr>
+          <tr><td>Следователь</td><td><code>/co i</code>, <code>/co near</code></td><td>Сбор улик, нейтралитет</td></tr>
+          <tr><td>Охрана порядка</td><td><code>/freeze</code>, <code>/unfreeze</code></td><td>Задержание до суда</td></tr>
+          <tr><td>Адвокат</td><td>Доступ в зону задержания</td><td>Помощь игрокам, аудит договоров</td></tr>
+          <tr><td>Строитель</td><td><code>/hat</code>, <code>/ec</code></td><td>Заказы Мэра, реставрация</td></tr>
+          <tr><td>Ивент-менеджер</td><td><code>/broadcast</code></td><td>Минимум 1 событие в 2 недели</td></tr>
+        </table>
+      </div>
+
+      <!-- Экономика -->
+      <div class="doc-section" id="doc-economy">
+        <h1>Экономика и торговля</h1>
+        <p class="doc-lead">Живая экономика между игроками. Умные бочки-магазины, онлайн-торги, государственные тендеры.</p>
+        <h2>Умные бочки (SmartBarrel)</h2>
+        <table class="doc-table">
+          <tr><th>Тип</th><th>Описание</th></tr>
+          <tr><td>Магазин</td><td>Один товар, фиксированная цена. Склад 18 слотов + касса. ЛКМ ×1, ПКМ ×16, Shift ×64</td></tr>
+          <tr><td>Бар</td><td>Разные напитки, у каждого своя цена. Склад 54 слота</td></tr>
+          <tr><td>Уникальный</td><td>Как бар, но для любых предметов. Склад 54 слота</td></tr>
+        </table>
+        <h2>Онлайн-торги</h2>
+        <ul>
+          <li>Игрок размещает объявление на доске в Столице</li>
+          <li>Покупатель связывается в чате и договаривается об условиях</li>
+          <li>Обмен лично — встречаются и передают предметы напрямую</li>
+          <li>Споры при мошенничестве — разбирает Судья при наличии доказательств</li>
+        </ul>
+        <h2>Тендеры и кланы</h2>
+        <ul>
+          <li>Тендер — официальный заказ от Мэра, условия фиксируются в Discord</li>
+          <li>Клан даёт право на коллективные иски и участие в тендерах</li>
+          <li>Группа от 3 человек выбирает представителя для переговоров с Мэром</li>
+        </ul>
+      </div>
+
+      <!-- Фракции -->
+      <div class="doc-section" id="doc-factions">
+        <h1>Войны городов и фракций</h1>
+        <div class="info-box future">
+          <strong>⚙ Планируемая механика</strong> — будет введена при достаточном онлайне и росте Столицы.
+        </div>
+        <p class="doc-lead">Система городов, фракций и межгородских конфликтов. Стройте города, создавайте союзы, объявляйте войны.</p>
+        <h2>Новые города</h2>
+        <ul>
+          <li>Столица — стартовый город, от которого отпочковываются остальные</li>
+          <li>Группа игроков может основать новый город за пределами Столицы</li>
+          <li>Каждый город имеет своего Мэра, законы и инфраструктуру</li>
+        </ul>
+        <h2>Фракции</h2>
+        <ul>
+          <li>Фракция — объединение игроков (может включать несколько городов)</li>
+          <li>Союзы, торговые договоры, нейтралитет — всё доступно</li>
+          <li>Объявление войны — официальная процедура через Discord</li>
+        </ul>
+        <h2>Войны и захват</h2>
+        <ul>
+          <li>В состоянии войны — полное ПВП между членами враждующих фракций везде на карте</li>
+          <li>Структуры (рудники, данжи) можно захватывать у противника</li>
+          <li>Мир заключается договором в Discord</li>
+          <li>Нейтральные игроки не затрагиваются</li>
+        </ul>
+        <h2>Наёмники</h2>
+        <ul>
+          <li>Игроки без фракции могут наниматься любой стороне конфликта</li>
+          <li>Заказы размещаются на доске найма в Столице</li>
+        </ul>
+      </div>
+
+      <!-- Команды -->
+      <div class="doc-section" id="doc-commands">
+        <h1>Команды игрока</h1>
+        <p class="doc-lead">Полный справочник доступных команд.</p>
+        <h2>Регистрация</h2>
+        <table class="doc-table">
+          <tr><td>/register</td><td>Регистрация при первом входе</td></tr>
+          <tr><td>/login, /l</td><td>Авторизация при каждом входе</td></tr>
+          <tr><td>/changepassword</td><td>Смена пароля</td></tr>
+        </table>
+        <h2>Чат</h2>
+        <table class="doc-table">
+          <tr><td>/msg &lt;ник&gt; &lt;текст&gt;</td><td>Личное сообщение</td></tr>
+          <tr><td>/r &lt;текст&gt;</td><td>Ответить последнему собеседнику</td></tr>
+          <tr><td>/ignore &lt;ник&gt;</td><td>Заблокировать игрока</td></tr>
+          <tr><td>/unignore &lt;ник&gt;</td><td>Снять блок</td></tr>
+          <tr><td>/me &lt;текст&gt;</td><td>Ролевое действие от третьего лица</td></tr>
+        </table>
+        <h2>Быт и эмоции</h2>
+        <table class="doc-table">
+          <tr><td>/sit</td><td>Сесть (или ПКМ по ступеньке)</td></tr>
+          <tr><td>/lay</td><td>Лечь</td></tr>
+          <tr><td>/crawl</td><td>Ползти</td></tr>
+          <tr><td>/bellyflop</td><td>Лечь на животик</td></tr>
+          <tr><td>/Sleeper</td><td>Пропустить ночь</td></tr>
+        </table>
+        <h2>Сундуки и хранилища</h2>
+        <table class="doc-table">
+          <tr><td>/lock</td><td>Заблокировать свой сундук</td></tr>
+          <tr><td>/unlock</td><td>Открыть для общего доступа</td></tr>
+          <tr><td>/trust &lt;ник&gt;</td><td>Добавить доверенного игрока</td></tr>
+        </table>
+        <h2>Скины и визуал</h2>
+        <table class="doc-table">
+          <tr><td>/skin set &lt;ник&gt;</td><td>Скин другого игрока</td></tr>
+          <tr><td>/skin url &lt;ссылка&gt;</td><td>Скин по ссылке</td></tr>
+          <tr><td>/skin clear</td><td>Стандартный скин</td></tr>
+          <tr><td>/skin update</td><td>Обновить скин</td></tr>
+          <tr><td>/hat</td><td>Надеть предмет на голову (Строители)</td></tr>
+          <tr><td>/ec, /enderchest</td><td>Карманный эндер-сундук (Строители)</td></tr>
+        </table>
+        <h2>Алкоголь (Brewery)</h2>
+        <table class="doc-table">
+          <tr><td>/brew help</td><td>Список команд</td></tr>
+          <tr><td>/brew info</td><td>Информация о напитке в руке</td></tr>
+          <tr><td>/brew wakeup</td><td>Выйти из опьянения</td></tr>
+          <tr><td>/brew drain</td><td>Слить жидкость из бочки</td></tr>
+          <tr><td>/brew create</td><td>Создать бочку для варки</td></tr>
+        </table>
+      </div>
+
+      <!-- Правила -->
+      <div class="doc-section" id="doc-rules">
+        <h1>Правила сервера</h1>
+        <p class="doc-lead">Незнание правил не освобождает от ответственности. Заходя на сервер — вы соглашаетесь с ними.</p>
+        <h2>Поведение</h2>
+        <ul>
+          <li>Запрещены оскорбления, пропаганда насилия, экстремизм</li>
+          <li>Спам, флуд, злоупотребление CAPS — запрещены</li>
+          <li>Никнейм, скин, аватар Discord — без оскорблений</li>
+        </ul>
+        <h2>Технические нарушения → Административный бан</h2>
+        <ul>
+          <li>Читы: X-Ray, KillAura, Fly и любое ПО с преимуществом</li>
+          <li>Дюп предметов, эксплойты барьера, лаг-машины</li>
+          <li>Умышленный суицид для сужения барьера</li>
+        </ul>
+        <h2>Игровые нарушения → Суд</h2>
+        <ul>
+          <li>Гриферство — уничтожение чужих построек в зоне Столицы</li>
+          <li>Кража — из защищённых контейнеров в Столице</li>
+          <li>Незаконное PvP — убийство без согласия внутри Столицы</li>
+        </ul>
+        <h2>Наказания</h2>
+        <table class="doc-table">
+          <tr><th>Нарушение</th><th>Наказание</th></tr>
+          <tr><td>1-е</td><td>Предупреждение</td></tr>
+          <tr><td>2-е</td><td>Мут, кик или ограничение доступа</td></tr>
+          <tr><td>3-е и далее</td><td>Временный или постоянный бан</td></tr>
+          <tr><td>Серьёзные нарушения</td><td>Моментальный бан без предупреждения</td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     НОВОСТИ
+══════════════════════════════════ -->
+<div id="news" class="page">
+  <div class="news-header">
+    <h1>Новости и обновления</h1>
+    <p>Следи за развитием сервера — новые механики, события и анонсы</p>
+  </div>
+
+  <!-- Admin bar (hidden by default) -->
+  <div class="admin-bar" id="adminBar" style="display:none">
+    <div class="admin-bar-text">⚙️ Режим администратора</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-add-news" onclick="openAddNews()">+ Добавить новость</button>
+      <button class="btn-logout" onclick="adminLogout()">Выйти</button>
+    </div>
+  </div>
+
+  <div class="news-container">
+    <div class="news-list" id="newsList">
+      <!-- Rendered dynamically -->
+    </div>
+
+    <div class="news-sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-title">Статус сервера</div>
+        <div class="server-status">
+          <div class="status-indicator" id="sidebar-status-indicator">
+            <div class="status-dot loading" id="sidebar-dot"></div>
+            <span id="sidebar-status-text">Проверка...</span>
+          </div>
+          <div class="version-tag" id="sidebar-version">1.21.x</div>
+        </div>
+        <div style="margin: 8px 0 4px;">
+          <div class="players-online" id="sidebar-players">—</div>
+          <div class="players-label">игроков в сети <span class="players-max" id="sidebar-max"></span></div>
+        </div>
+        <div class="server-ip" onclick="copyIP()">blissfull.mc-server.net:25816</div>
+      </div>
+
+      <div class="sidebar-widget">
+        <div class="widget-title">Последние изменения</div>
+        <div class="changelog-list">
+          <div class="changelog-item">
+            <div class="changelog-version">v1.7</div>
+            <div class="changelog-text">SmartBarrel — уникальный режим магазина</div>
+          </div>
+          <div class="changelog-item">
+            <div class="changelog-version">v2.0</div>
+            <div class="changelog-text">EternalBorder — стабильный релиз</div>
+          </div>
+          <div class="changelog-item">
+            <div class="changelog-version">v1.2</div>
+            <div class="changelog-text">TradeExperience — интеграция с EternalBorder</div>
+          </div>
+          <div class="changelog-item">
+            <div class="changelog-version">v1.5</div>
+            <div class="changelog-text">SmartBarrel — защита от взрывов</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-widget">
+        <div class="widget-title">Сообщество</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a href="https://discord.gg/MY32B5hn3q" target="_blank" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text2);font-size:13px;padding:10px;background:rgba(88,101,242,0.08);border:1px solid rgba(88,101,242,0.2);border-radius:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(88,101,242,0.15)'" onmouseout="this.style.background='rgba(88,101,242,0.08)'">
+            <span style="font-size:18px">💬</span> Discord сервер
+          </a>
+          <a href="https://t.me/BlissFullReloaded" target="_blank" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text2);font-size:13px;padding:10px;background:rgba(38,165,228,0.08);border:1px solid rgba(38,165,228,0.2);border-radius:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(38,165,228,0.15)'" onmouseout="this.style.background='rgba(38,165,228,0.08)'">
+            <span style="font-size:18px">✈️</span> Telegram канал
+          </a>
+          <a href="https://www.tiktok.com/@jayrest29" target="_blank" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text2);font-size:13px;padding:10px;background:rgba(255,0,80,0.06);border:1px solid rgba(255,0,80,0.15);border-radius:6px;transition:all 0.2s" onmouseover="this.style.background='rgba(255,0,80,0.12)'" onmouseout="this.style.background='rgba(255,0,80,0.06)'">
+            <span style="font-size:18px">🎵</span> TikTok
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ══════════════════════════════════
+  // BACKEND URL — вставь свой после деплоя
+  // Пример: 'https://blissfull-auth.railway.app/auth'
+  // ══════════════════════════════════
+  const AUTH_URL = 'http://127.0.0.1:3000/auth';
+
+  // ══════════════════════════════════
+  // NEWS DATA (stored in localStorage)
+  // ══════════════════════════════════
+  const DEFAULT_NEWS = [
+    {
+      id: 1,
+      type: 'update',
+      typeLabel: 'Обновление',
+      date: '22.02.2026',
+      title: 'SmartBarrel v1.7 — Уникальный режим магазина',
+      text: 'Добавлен режим «Уникальные предметы» для бочек-магазинов. Теперь можно продавать разные предметы с индивидуальными ценами в одной бочке — как в баре. Также исправлены дюп-баги и расширен склад бара до 54 слотов.',
+      tags: ['SmartBarrel', 'Экономика', 'Фикс']
+    },
+    {
+      id: 2,
+      type: 'update',
+      typeLabel: 'Обновление',
+      date: '22.02.2026',
+      title: 'EternalBorder v2.0 — Стабильный релиз',
+      text: 'Полный рефакторинг плагина барьера. Модульная архитектура, исправлены утечки памяти, добавлена интеграция с TradeExperience. Опыт от BioMarket теперь идёт напрямую в банк барьера без дублирования.',
+      tags: ['EternalBorder', 'Барьер', 'Стабильность']
+    },
+    {
+      id: 3,
+      type: 'announce',
+      typeLabel: 'Анонс',
+      date: '23.02.2026',
+      title: 'Столица и система ПВП — в разработке',
+      text: 'Официально подтверждена новая концепция: единый стартовый город (Столица) с РП-постройками, платной защитой и доской найма. За пределами Столицы — полное ПВП с рейдами баз. Дата внедрения будет объявлена в Discord.',
+      tags: ['Столица', 'ПВП', 'Анонс']
+    },
+    {
+      id: 4,
+      type: 'event',
+      typeLabel: 'Событие',
+      date: '19.02.2026',
+      title: 'Войны фракций — механика подтверждена',
+      text: 'Система городов и фракций официально войдёт в сервер при росте онлайна. Прописана полная механика: основание городов, объявление войн, захват структур, дипломатия и наёмники. Следите за обновлениями.',
+      tags: ['Фракции', 'Войны', 'Планы']
+    }
+  ];
+
+  const TYPE_LABELS = {
+    update: 'Обновление',
+    event: 'Событие',
+    announce: 'Анонс',
+    fix: 'Фикс',
+    info: 'Инфо'
+  };
+
+  let isAdmin = false;
+  let editingId = null;
+
+  function getNews() {
+    try {
+      const stored = localStorage.getItem('blissfull_news');
+      return stored ? JSON.parse(stored) : DEFAULT_NEWS;
+    } catch(e) { return DEFAULT_NEWS; }
+  }
+
+  function saveNews(news) {
+    try { localStorage.setItem('blissfull_news', JSON.stringify(news)); } catch(e) {}
+  }
+
+  function renderNews() {
+    const news = getNews();
+    const container = document.getElementById('newsList');
+    if (!container) return;
+    container.innerHTML = news.map(n => `
+      <div class="news-card type-${n.type}" id="nc-${n.id}">
+        <div class="news-meta">
+          <span class="news-type">${escHtml(n.typeLabel || TYPE_LABELS[n.type] || n.type)}</span>
+          <span class="news-date">${escHtml(n.date)}</span>
+        </div>
+        <h2>${escHtml(n.title)}</h2>
+        <p>${escHtml(n.text)}</p>
+        <div class="news-tags">${(n.tags||[]).map(t => `<span class="news-tag">${escHtml(t)}</span>`).join('')}</div>
+        ${isAdmin ? `<div class="news-actions">
+          <button class="btn-edit" onclick="openEditNews(${n.id})">✏️ Редактировать</button>
+          <button class="btn-danger" onclick="deleteNews(${n.id})">🗑 Удалить</button>
+        </div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── ADMIN AUTH ──
+  function openAdminLogin() {
+    document.getElementById('adminLoginModal').classList.add('open');
+    document.getElementById('adminPassInput').value = '';
+    document.getElementById('adminPassInput').focus();
+    document.getElementById('adminLoginError').style.display = 'none';
+    document.getElementById('adminLoginError').textContent = 'Неверный пароль';
+  }
+
+  function closeAdminLogin() {
+    document.getElementById('adminLoginModal').classList.remove('open');
+  }
+
+  async function doAdminLogin() {
+    const val = document.getElementById('adminPassInput').value;
+    if (!val) return;
+
+    const btn = document.querySelector('#adminLoginModal .btn-submit');
+    const err = document.getElementById('adminLoginError');
+    btn.textContent = 'Проверка...';
+    btn.disabled = true;
+    err.style.display = 'none';
+
+    try {
+      const resp = await fetch(AUTH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: val })
+      });
+
+      const data = await resp.json();
+
+      if (data.ok) {
+        isAdmin = true;
+        closeAdminLogin();
+        document.getElementById('adminBar').style.display = '';
+        renderNews();
+      } else {
+        err.textContent = resp.status === 429 ? 'Слишком много попыток, подожди минуту' : 'Неверный пароль';
+        err.style.display = 'block';
+        document.getElementById('adminPassInput').value = '';
+        document.getElementById('adminPassInput').focus();
+      }
+    } catch (e) {
+      err.textContent = 'Ошибка соединения с сервером';
+      err.style.display = 'block';
+    } finally {
+      btn.textContent = 'Войти';
+      btn.disabled = false;
+    }
+  }
+
+  function adminLogout() {
+    isAdmin = false;
+    document.getElementById('adminBar').style.display = 'none';
+    renderNews();
+  }
+
+  // ── ADD / EDIT NEWS ──
+  function openAddNews() {
+    editingId = null;
+    document.getElementById('newsFormTitle').textContent = '➕ Добавить новость';
+    document.getElementById('newsFormType').value = 'update';
+    document.getElementById('newsFormDate').value = new Date().toLocaleDateString('ru-RU');
+    document.getElementById('newsFormTitle2').value = '';
+    document.getElementById('newsFormText').value = '';
+    document.getElementById('newsFormTags').value = '';
+    document.getElementById('newsModal').classList.add('open');
+  }
+
+  function openEditNews(id) {
+    const news = getNews();
+    const item = news.find(n => n.id === id);
+    if (!item) return;
+    editingId = id;
+    document.getElementById('newsFormTitle').textContent = '✏️ Редактировать новость';
+    document.getElementById('newsFormType').value = item.type;
+    document.getElementById('newsFormDate').value = item.date;
+    document.getElementById('newsFormTitle2').value = item.title;
+    document.getElementById('newsFormText').value = item.text;
+    document.getElementById('newsFormTags').value = (item.tags||[]).join(', ');
+    document.getElementById('newsModal').classList.add('open');
+  }
+
+  function closeNewsModal() {
+    document.getElementById('newsModal').classList.remove('open');
+  }
+
+  function saveNewsForm() {
+    const type = document.getElementById('newsFormType').value;
+    const date = document.getElementById('newsFormDate').value.trim();
+    const title = document.getElementById('newsFormTitle2').value.trim();
+    const text = document.getElementById('newsFormText').value.trim();
+    const tagsRaw = document.getElementById('newsFormTags').value.trim();
+    const tags = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+
+    if (!title || !text) {
+      alert('Заполните заголовок и текст новости.');
+      return;
+    }
+
+    let news = getNews();
+    if (editingId !== null) {
+      news = news.map(n => n.id === editingId ? {
+        ...n, type, typeLabel: TYPE_LABELS[type]||type, date, title, text, tags
+      } : n);
+    } else {
+      const newId = Date.now();
+      news.unshift({ id: newId, type, typeLabel: TYPE_LABELS[type]||type, date, title, text, tags });
+    }
+    saveNews(news);
+    closeNewsModal();
+    renderNews();
+  }
+
+  function deleteNews(id) {
+    if (!confirm('Удалить эту новость?')) return;
+    const news = getNews().filter(n => n.id !== id);
+    saveNews(news);
+    renderNews();
+  }
+
+  // ── PAGES ──
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+    if (id === 'news') renderNews();
+  }
+
+  function showDoc(id) {
+    document.querySelectorAll('.doc-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function copyIP() {
+    navigator.clipboard.writeText('blissfull.mc-server.net:25816').catch(() => {});
+    const toast = document.getElementById('copyToast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  // ── LIVE SERVER STATUS ──
+  const SERVER_HOST = 'blissfull.mc-server.net';
+  const SERVER_PORT = 25816;
+
+  async function fetchServerStatus() {
+    try {
+      const url = `https://api.mcsrvstat.us/3/${SERVER_HOST}:${SERVER_PORT}`;
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      updateServerUI(data);
+    } catch(e) {
+      updateServerUI(null);
+    }
+  }
+
+  function updateServerUI(data) {
+    const online = data && data.online;
+    const players = online && data.players ? data.players.online : 0;
+    const maxPlayers = online && data.players ? data.players.max : 0;
+    const version = online && data.version ? data.version : '1.21.x';
+
+    // Hero badge
+    const badge = document.querySelector('.hero-badge');
+    if (badge) {
+      badge.innerHTML = online
+        ? '<span style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;display:inline-block"></span> Сервер онлайн'
+        : '<span style="width:6px;height:6px;background:var(--red);border-radius:50%;display:inline-block"></span> Сервер офлайн';
+      badge.style.borderColor = online ? 'rgba(0,255,136,0.25)' : 'rgba(255,68,85,0.25)';
+      badge.style.background = online ? 'rgba(0,255,136,0.08)' : 'rgba(255,68,85,0.08)';
+    }
+
+    // Hero stats
+    const heroPlayers = document.getElementById('hero-players');
+    const heroStatus = document.getElementById('hero-status');
+    const heroVersion = document.getElementById('hero-version');
+    if (heroPlayers) { heroPlayers.textContent = online ? players : '—'; heroPlayers.style.color = online ? 'var(--green)' : 'var(--red)'; }
+    if (heroStatus) { heroStatus.textContent = online ? 'Онлайн' : 'Офлайн'; heroStatus.style.color = online ? 'var(--green)' : 'var(--red)'; }
+    if (heroVersion) { heroVersion.textContent = version; }
+
+    // Sidebar
+    const dot = document.getElementById('sidebar-dot');
+    const statusText = document.getElementById('sidebar-status-text');
+    const sidebarPlayers = document.getElementById('sidebar-players');
+    const sidebarMax = document.getElementById('sidebar-max');
+    const sidebarVersion = document.getElementById('sidebar-version');
+
+    if (dot) {
+      dot.className = 'status-dot' + (online ? '' : ' offline');
+    }
+    if (statusText) statusText.textContent = online ? 'Онлайн' : 'Офлайн';
+    if (sidebarPlayers) { sidebarPlayers.textContent = online ? players : '—'; sidebarPlayers.style.color = online ? 'var(--green)' : 'var(--red)'; }
+    if (sidebarMax) sidebarMax.textContent = online && maxPlayers ? `/ ${maxPlayers}` : '';
+    if (sidebarVersion) sidebarVersion.textContent = version;
+  }
+
+  // ── INIT ──
+  renderNews();
+  fetchServerStatus();
+  setInterval(fetchServerStatus, 60000); // refresh every minute
+
+  // Keyboard shortcuts for modals
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.getElementById('newsModal').classList.remove('open');
+      document.getElementById('adminLoginModal').classList.remove('open');
+    }
+  });
+</script>
+<!-- ── ADMIN FAB ── -->
+<button class="admin-fab" onclick="openAdminLogin()" title="Войти как администратор">⚙️</button>
+
+<!-- ── ADMIN LOGIN MODAL ── -->
+<div class="modal-overlay" id="adminLoginModal">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-title">🔒 Вход для администратора</div>
+    <button class="modal-close" onclick="closeAdminLogin()">✕</button>
+    <div class="form-group">
+      <label class="form-label">Пароль</label>
+      <input type="password" class="form-input" id="adminPassInput" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')doAdminLogin()">
+    </div>
+    <div id="adminLoginError" style="display:none;color:var(--red);font-size:13px;margin-bottom:12px;">Неверный пароль</div>
+    <button class="btn-submit" onclick="doAdminLogin()">Войти</button>
+  </div>
+</div>
+
+<!-- ── NEWS FORM MODAL ── -->
+<div class="modal-overlay" id="newsModal">
+  <div class="modal-box">
+    <div class="modal-title" id="newsFormTitle">➕ Добавить новость</div>
+    <button class="modal-close" onclick="closeNewsModal()">✕</button>
+
+    <div class="form-group">
+      <label class="form-label">Тип</label>
+      <select class="form-select" id="newsFormType">
+        <option value="update">Обновление</option>
+        <option value="announce">Анонс</option>
+        <option value="event">Событие</option>
+        <option value="fix">Фикс</option>
+        <option value="info">Инфо</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Дата (например, 23.02.2026)</label>
+      <input type="text" class="form-input" id="newsFormDate" placeholder="ДД.ММ.ГГГГ">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Заголовок</label>
+      <input type="text" class="form-input" id="newsFormTitle2" placeholder="Название новости">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Текст</label>
+      <textarea class="form-textarea" id="newsFormText" placeholder="Описание обновления..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Теги (через запятую)</label>
+      <input type="text" class="form-tags-input" id="newsFormTags" placeholder="Тег1, Тег2, Тег3">
+    </div>
+
+    <button class="btn-submit" onclick="saveNewsForm()">💾 Сохранить</button>
+  </div>
+</div>
+
+</body>
+</html>
