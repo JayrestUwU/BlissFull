@@ -1046,8 +1046,8 @@
     const badge = document.querySelector('.hero-badge');
     if (badge) {
       badge.innerHTML = online
-        ? '<span style="width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;display:inline-block"></span> Сервер онлайн'
-        : '<span style="width:6px;height:6px;background:var(--red);border-radius:50%;display:inline-block"></span> Сервер офлайн';
+        ? ' Сервер онлайн'
+        : ' Сервер офлайн';
       badge.style.borderColor = online ? 'rgba(0,255,136,0.25)' : 'rgba(255,68,85,0.25)';
       badge.style.background  = online ? 'rgba(0,255,136,0.08)' : 'rgba(255,68,85,0.08)';
     }
