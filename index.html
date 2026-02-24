@@ -389,19 +389,158 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* ══════════════ HAMBURGER ══════════════ */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    z-index: 1100;
+  }
+  .nav-hamburger:hover { background: rgba(255,255,255,0.06); }
+  .nav-hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: var(--text2); border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .nav-mobile-menu {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: rgba(8,12,16,0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 12px 16px 16px;
+    z-index: 999;
+    gap: 4px;
+  }
+  .nav-mobile-menu.open { display: flex; }
+  .nav-mobile-menu a {
+    color: var(--text2); text-decoration: none; font-size: 14px;
+    font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 12px 16px; border-radius: 6px; transition: all 0.2s;
+    cursor: pointer; display: block;
+  }
+  .nav-mobile-menu a:hover, .nav-mobile-menu a.active {
+    color: var(--accent); background: rgba(0,212,255,0.08);
+  }
+  .nav-mobile-menu .nav-ip-mobile {
+    margin-top: 8px; font-family: 'Minecraft', monospace;
+    font-size: 13px; color: var(--green);
+    background: rgba(0,255,136,0.06); border: 1px solid rgba(0,255,136,0.2);
+    padding: 12px 16px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+    text-align: center;
+  }
+  .nav-mobile-menu .nav-ip-mobile:hover { background: rgba(0,255,136,0.12); }
+
+  /* ══════════════ MOBILE RESPONSIVE ══════════════ */
+  @media (max-width: 768px) {
+    /* NAV */
+    nav { padding: 0 16px; }
+    .nav-links { display: none; }
+    .nav-ip { display: none; }
+    .nav-hamburger { display: flex; }
+
+    /* HERO */
+    .hero-content { padding: 60px 20px 60px; }
+    .hero-title { font-size: clamp(36px, 12vw, 60px); }
+    .hero-sub { font-size: 15px; margin: 16px 0 28px; }
+    .hero-actions { gap: 12px; }
+    .btn-primary, .btn-outline { padding: 12px 22px; font-size: 13px; width: 100%; text-align: center; box-sizing: border-box; }
+    .stats-bar { flex-direction: column; margin-top: 40px; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding: 16px 20px; }
+    .stat-item:last-child { border-bottom: none; }
+
+    /* FEATURES */
+    .features { padding: 60px 20px; }
+    .features-grid { grid-template-columns: 1fr; gap: 16px; }
+    .section-title { font-size: 26px; }
+
+    /* SOCIALS */
+    .socials-section { padding: 40px 20px 60px; }
+    .socials-grid { grid-template-columns: 1fr; gap: 12px; }
+    .social-card { padding: 18px 20px; }
+
+    /* NEWS */
+    .news-header { padding: 40px 20px 28px; }
+    .news-header h1 { font-size: 28px; }
+    .news-container { grid-template-columns: 1fr; padding: 24px 20px; gap: 24px; }
+    .news-sidebar { order: -1; }
+    .news-card { padding: 20px; }
+
+    /* DOCS */
+    .docs-admin-bar { padding: 10px 16px; flex-wrap: wrap; }
+    .docs-layout { flex-direction: column; }
+    .docs-sidebar {
+      width: 100%; height: auto; position: relative; top: 0;
+      border-right: none; border-bottom: 1px solid var(--border);
+      padding: 16px 0; overflow-x: auto; overflow-y: hidden;
+      display: flex; flex-direction: row; flex-wrap: wrap;
+    }
+    .docs-sidebar .sidebar-section { display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; padding: 8px 12px; }
+    .docs-sidebar .sidebar-section-title { display: none; }
+    .sidebar-link { border-left: none; border-radius: 20px; border: 1px solid var(--border); white-space: nowrap; padding: 6px 14px; font-size: 12px; }
+    .sidebar-link.active { background: rgba(0,212,255,0.1); border-color: var(--accent); }
+    .sidebar-link-actions { display: none !important; }
+    .docs-content { padding: 28px 20px; max-width: 100%; }
+    .doc-section h1 { font-size: 24px; }
+    .doc-section h2 { font-size: 17px; }
+    .zone-grid { grid-template-columns: 1fr; }
+    .doc-cols-2, .doc-cols-3 { grid-template-columns: 1fr; }
+    .event-row { grid-template-columns: 1fr; }
+    .event-row .ev-name { border-right: none; border-bottom: 1px solid var(--border); }
+    .event-row .ev-desc { border-right: none; border-bottom: 1px solid var(--border); }
+    .doc-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    /* MODALS */
+    .modal-box { padding: 20px 16px; margin: 0 12px; }
+    .modal-title { font-size: 16px; }
+
+    /* ADMIN */
+    .admin-bar { padding: 10px 16px; flex-wrap: wrap; }
+    .admin-fab { bottom: 20px; right: 16px; }
+    .copy-toast { right: 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-title { font-size: 10vw; }
+    .hero-badge { font-size: 10px; }
+    .section-title { font-size: 22px; }
+    .nav-logo { font-size: 14px; }
+    .news-card h2 { font-size: 15px; }
+    .doc-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="nav-logo" onclick="showPage('home')">Bliss<span>Full</span>Reloaded</div>
+  <div class="nav-logo" onclick="showPage('home');closeMobileMenu()">Bliss<span>Full</span>Reloaded</div>
   <div class="nav-links">
     <a onclick="showPage('home')" id="nav-home" class="active">Главная</a>
     <a onclick="showPage('docs')" id="nav-docs">Документация</a>
     <a onclick="showPage('news')" id="nav-news">Новости</a>
   </div>
   <div class="nav-ip" onclick="copyIP()">blissfull.mc-server.net:25816</div>
+  <div class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </div>
 </nav>
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a onclick="showPage('home');closeMobileMenu()" id="nav-m-home" class="active">Главная</a>
+  <a onclick="showPage('docs');closeMobileMenu()" id="nav-m-docs">Документация</a>
+  <a onclick="showPage('news');closeMobileMenu()" id="nav-m-news">Новости</a>
+  <div class="nav-ip-mobile" onclick="copyIP();closeMobileMenu()">📋 blissfull.mc-server.net:25816</div>
+</div>
 <div class="copy-toast" id="copyToast">✓ IP скопирован!</div>
 
 <!-- ══════════════════════ ГЛАВНАЯ ══════════════════════ -->
@@ -664,7 +803,7 @@
 </div>
 
 <script>
-const AUTH_URL = 'https://blissfull-production.up.railway.app/auth';
+const AUTH_URL = 'https://blissfull-production.up.railway.app/auth'; // legacy, used below
 let isAdmin = false;
 let editingNewsId = null;
 let editingDocId = null;
@@ -1029,25 +1168,61 @@ const DEFAULT_DOCS = [
 [/zones]`}
 ];
 
-const DOCS_VERSION = 'v3'; // Увеличь при смене DEFAULT_DOCS
+const DOCS_VERSION = 'v3';
 
-function getDocs() {
+async function renderDocs() {
+  const sidebar = document.getElementById('docsSidebar');
+  const content = document.getElementById('docsContent');
+  if (!sidebar || !content) return;
+  let docs;
   try {
-    if (localStorage.getItem('bfr_docs_ver') !== DOCS_VERSION) {
-      // Устаревший кэш — сбрасываем
-      localStorage.removeItem('bfr_docs');
-      localStorage.setItem('bfr_docs_ver', DOCS_VERSION);
-      return DEFAULT_DOCS;
-    }
-    const d = localStorage.getItem('bfr_docs');
-    return d ? JSON.parse(d) : DEFAULT_DOCS;
-  } catch(e) { return DEFAULT_DOCS; }
+    const resp = await fetch(API + '/api/docs');
+    docs = resp.ok ? await resp.json() : DEFAULT_DOCS;
+  } catch(e) { docs = DEFAULT_DOCS; }
+  _renderDocsUI(docs);
 }
-function saveDocs(docs) {
-  try {
-    localStorage.setItem('bfr_docs', JSON.stringify(docs));
-    localStorage.setItem('bfr_docs_ver', DOCS_VERSION);
-  } catch(e) {}
+
+function _renderDocsUI(docs) {
+  const sidebar = document.getElementById('docsSidebar');
+  const content = document.getElementById('docsContent');
+  if (!sidebar || !content) return;
+
+  const cats = {};
+  docs.forEach(d => { if (!cats[d.category]) cats[d.category] = []; cats[d.category].push(d); });
+
+  let sidebarHtml = '';
+  for (const [cat, items] of Object.entries(cats)) {
+    sidebarHtml += `<div class="sidebar-section"><div class="sidebar-section-title">${escHtml(cat)}</div>`;
+    items.forEach(d => {
+      const active = d.id === (currentDocId !== null ? currentDocId : docs[0]?.id) ? ' active' : '';
+      sidebarHtml += `<div class="sidebar-link${active}" onclick="showDoc(${d.id}, this)">
+        <span>${escHtml(d.title)}</span>
+        ${isAdmin ? `<span class="sidebar-link-actions">
+          <button class="sidebar-btn" onclick="event.stopPropagation();openEditDoc(${d.id})" title="Редактировать">✏</button>
+          <button class="sidebar-btn del" onclick="event.stopPropagation();deleteDoc(${d.id})" title="Удалить">✕</button>
+        </span>` : ''}
+      </div>`;
+    });
+    sidebarHtml += '</div>';
+  }
+  sidebar.innerHTML = sidebarHtml;
+
+  let contentHtml = '';
+  docs.forEach(d => {
+    const active = d.id === (currentDocId !== null ? currentDocId : docs[0]?.id) ? ' active' : '';
+    contentHtml += `<div class="doc-section${active}" id="doc-${d.id}">
+      <h1>${escHtml(d.title)}</h1>
+      <p class="doc-lead">${escHtml(d.lead)}</p>
+      ${parseDocMarkup(d.body)}
+      ${isAdmin ? `<div class="doc-section-actions">
+        <button class="btn-edit" onclick="openEditDoc(${d.id})">✏️ Редактировать раздел</button>
+        <button class="btn-danger" onclick="deleteDoc(${d.id})">🗑 Удалить раздел</button>
+      </div>` : ''}
+    </div>`;
+  });
+  content.innerHTML = contentHtml;
+
+  if (currentDocId === null && docs.length > 0) currentDocId = docs[0].id;
 }
 
 // ══════════════════════════════════════════════════════
@@ -1233,51 +1408,8 @@ function unescHtml(s) {
 // RENDER DOCS
 // ══════════════════════════════════════════════════════
 function getDocsWithGuide() {
-  return getDocs();
-}
-
-function renderDocs() {
-  const docs = getDocsWithGuide();
-  const sidebar = document.getElementById('docsSidebar');
-  const content = document.getElementById('docsContent');
-  if (!sidebar || !content) return;
-
-  const cats = {};
-  docs.forEach(d => { if (!cats[d.category]) cats[d.category] = []; cats[d.category].push(d); });
-
-  let sidebarHtml = '';
-  for (const [cat, items] of Object.entries(cats)) {
-    sidebarHtml += `<div class="sidebar-section"><div class="sidebar-section-title">${escHtml(cat)}</div>`;
-    items.forEach(d => {
-      const active = d.id === (currentDocId !== null ? currentDocId : docs[0]?.id) ? ' active' : '';
-      sidebarHtml += `<div class="sidebar-link${active}" onclick="showDoc(${d.id}, this)">
-        <span>${escHtml(d.title)}</span>
-        ${isAdmin ? `<span class="sidebar-link-actions">
-          <button class="sidebar-btn" onclick="event.stopPropagation();openEditDoc(${d.id})" title="Редактировать">✏</button>
-          <button class="sidebar-btn del" onclick="event.stopPropagation();deleteDoc(${d.id})" title="Удалить">✕</button>
-        </span>` : ''}
-      </div>`;
-    });
-    sidebarHtml += '</div>';
-  }
-  sidebar.innerHTML = sidebarHtml;
-
-  let contentHtml = '';
-  docs.forEach(d => {
-    const active = d.id === (currentDocId !== null ? currentDocId : docs[0]?.id) ? ' active' : '';
-    contentHtml += `<div class="doc-section${active}" id="doc-${d.id}">
-      <h1>${escHtml(d.title)}</h1>
-      <p class="doc-lead">${escHtml(d.lead)}</p>
-      ${parseDocMarkup(d.body)}
-      ${isAdmin ? `<div class="doc-section-actions">
-        <button class="btn-edit" onclick="openEditDoc(${d.id})">✏️ Редактировать раздел</button>
-        <button class="btn-danger" onclick="deleteDoc(${d.id})">🗑 Удалить раздел</button>
-      </div>` : ''}
-    </div>`;
-  });
-  content.innerHTML = contentHtml;
-
-  if (currentDocId === null && docs.length > 0) currentDocId = docs[0].id;
+  // legacy stub — не используется
+  return DEFAULT_DOCS;
 }
 
 function showDoc(id, linkEl) {
@@ -1303,47 +1435,48 @@ function openAddDoc() {
 }
 
 function openEditDoc(id) {
-  const docs = getDocs();
-  const doc = docs.find(d => d.id === id);
-  if (!doc) return;
-  editingDocId = id;
-  document.getElementById('docFormTitle').textContent = '✏️ Редактировать раздел';
-  document.getElementById('docFormCat').value = doc.category;
-  document.getElementById('docFormHeading').value = doc.title;
-  document.getElementById('docFormLead').value = doc.lead;
-  document.getElementById('docFormBody').value = doc.body;
-  document.getElementById('docModal').classList.add('open');
+  fetch(API + '/api/docs').then(r => r.json()).then(docs => {
+    const doc = docs.find(d => d.id === id);
+    if (!doc) return;
+    editingDocId = id;
+    document.getElementById('docFormTitle').textContent = '✏️ Редактировать раздел';
+    document.getElementById('docFormCat').value = doc.category;
+    document.getElementById('docFormHeading').value = doc.title;
+    document.getElementById('docFormLead').value = doc.lead;
+    document.getElementById('docFormBody').value = doc.body;
+    document.getElementById('docModal').classList.add('open');
+  });
 }
 
 function closeDocModal() { document.getElementById('docModal').classList.remove('open'); }
 
-function saveDocForm() {
+async function saveDocForm() {
   const cat = document.getElementById('docFormCat').value.trim();
   const title = document.getElementById('docFormHeading').value.trim();
   const lead = document.getElementById('docFormLead').value.trim();
   const body = document.getElementById('docFormBody').value;
   if (!cat || !title) { alert('Заполните категорию и заголовок.'); return; }
-  let docs = getDocs();
-  if (editingDocId !== null) {
-    docs = docs.map(d => d.id === editingDocId ? { ...d, category: cat, title, lead, body } : d);
-    currentDocId = editingDocId;
-  } else {
-    const newId = Date.now();
-    docs.push({ id: newId, category: cat, title, lead, body });
-    currentDocId = newId;
-  }
-  saveDocs(docs);
-  closeDocModal();
-  renderDocs();
+  const payload = { category: cat, title, lead, body };
+  try {
+    const url = editingDocId !== null ? `${API}/api/docs/${editingDocId}` : `${API}/api/docs`;
+    const method = editingDocId !== null ? 'PUT' : 'POST';
+    const resp = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    if (!resp.ok) throw new Error('Server error ' + resp.status);
+    const result = await resp.json();
+    if (editingDocId === null && result.item) currentDocId = result.item.id;
+    else if (editingDocId !== null) currentDocId = editingDocId;
+    closeDocModal(); renderDocs();
+  } catch(e) { alert('Ошибка сохранения: ' + e.message); }
 }
 
-function deleteDoc(id) {
+async function deleteDoc(id) {
   if (!confirm('Удалить этот раздел документации?')) return;
-  let docs = getDocs().filter(d => d.id !== id);
-  saveDocs(docs);
-  const allDocs = getDocsWithGuide();
-  currentDocId = allDocs.length > 0 ? allDocs[0].id : null;
-  renderDocs();
+  try {
+    const resp = await fetch(`${API}/api/docs/${id}`, { method: 'DELETE' });
+    if (!resp.ok) throw new Error('Server error ' + resp.status);
+    currentDocId = null;
+    renderDocs();
+  } catch(e) { alert('Ошибка удаления: ' + e.message); }
 }
 
 function ins(text) {
@@ -1365,13 +1498,19 @@ const DEFAULT_NEWS = [
   { id:4, type:'event', typeLabel:'Событие', date:'19.02.2026', title:'Войны фракций — механика подтверждена', text:'Система городов и фракций официально войдёт в сервер при росте онлайна. Прописана полная механика: основание городов, объявление войн, захват структур, дипломатия и наёмники.', tags:['Фракции','Войны','Планы'] }
 ];
 
-function getNews() { try { const s = localStorage.getItem('blissfull_news'); return s ? JSON.parse(s) : DEFAULT_NEWS; } catch(e) { return DEFAULT_NEWS; } }
-function saveNews(news) { try { localStorage.setItem('blissfull_news', JSON.stringify(news)); } catch(e) {} }
+// ── API helpers (новости через бэкенд) ────────────────────────────────────
+const API = 'https://blissfull-production.up.railway.app';
 
-function renderNews() {
-  const news = getNews();
+async function renderNews() {
   const container = document.getElementById('newsList');
   if (!container) return;
+  container.innerHTML = '<div style="color:var(--text3);padding:24px;text-align:center">Загрузка...</div>';
+  let news;
+  try {
+    const resp = await fetch(API + '/api/news');
+    news = resp.ok ? await resp.json() : DEFAULT_NEWS;
+  } catch(e) { news = DEFAULT_NEWS; }
+  if (!news.length) { container.innerHTML = '<div style="color:var(--text3);padding:24px;text-align:center">Новостей пока нет.</div>'; return; }
   container.innerHTML = news.map(n => `
     <div class="news-card type-${n.type}">
       <div class="news-meta"><span class="news-type">${escHtml(n.typeLabel||n.type)}</span><span class="news-date">${escHtml(n.date)}</span></div>
@@ -1394,21 +1533,25 @@ function openAddNews() {
 }
 
 function openEditNews(id) {
-  const n = getNews().find(x => x.id === id);
-  if (!n) return;
+  // Ищем новость в уже отрендеренном DOM (data-атрибут) или загружаем с API
   editingNewsId = id;
   document.getElementById('newsFormTitle').textContent = '✏️ Редактировать новость';
-  document.getElementById('newsFormType').value = n.type;
-  document.getElementById('newsFormDate').value = n.date;
-  document.getElementById('newsFormTitle2').value = n.title;
-  document.getElementById('newsFormText').value = n.text;
-  document.getElementById('newsFormTags').value = (n.tags||[]).join(', ');
-  document.getElementById('newsModal').classList.add('open');
+  // Данные подтянем с API
+  fetch(API + '/api/news').then(r => r.json()).then(news => {
+    const n = news.find(x => x.id === id);
+    if (!n) return;
+    document.getElementById('newsFormType').value = n.type;
+    document.getElementById('newsFormDate').value = n.date;
+    document.getElementById('newsFormTitle2').value = n.title;
+    document.getElementById('newsFormText').value = n.text;
+    document.getElementById('newsFormTags').value = (n.tags||[]).join(', ');
+    document.getElementById('newsModal').classList.add('open');
+  }).catch(() => document.getElementById('newsModal').classList.add('open'));
 }
 
 function closeNewsModal() { document.getElementById('newsModal').classList.remove('open'); }
 
-function saveNewsForm() {
+async function saveNewsForm() {
   const type = document.getElementById('newsFormType').value;
   const date = document.getElementById('newsFormDate').value.trim();
   const title = document.getElementById('newsFormTitle2').value.trim();
@@ -1417,18 +1560,23 @@ function saveNewsForm() {
   const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
   const LABELS = { update:'Обновление', event:'Событие', announce:'Анонс', fix:'Фикс', info:'Инфо' };
   if (!title || !text) { alert('Заполните заголовок и текст новости.'); return; }
-  let news = getNews();
-  if (editingNewsId !== null) {
-    news = news.map(n => n.id === editingNewsId ? { ...n, type, typeLabel: LABELS[type]||type, date, title, text, tags } : n);
-  } else {
-    news.unshift({ id: Date.now(), type, typeLabel: LABELS[type]||type, date, title, text, tags });
-  }
-  saveNews(news); closeNewsModal(); renderNews();
+  const payload = { type, typeLabel: LABELS[type]||type, date, title, text, tags };
+  try {
+    const url = editingNewsId !== null ? `${API}/api/news/${editingNewsId}` : `${API}/api/news`;
+    const method = editingNewsId !== null ? 'PUT' : 'POST';
+    const resp = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    if (!resp.ok) throw new Error('Server error ' + resp.status);
+    closeNewsModal(); renderNews();
+  } catch(e) { alert('Ошибка сохранения: ' + e.message); }
 }
 
-function deleteNews(id) {
+async function deleteNews(id) {
   if (!confirm('Удалить эту новость?')) return;
-  saveNews(getNews().filter(n => n.id !== id)); renderNews();
+  try {
+    const resp = await fetch(`${API}/api/news/${id}`, { method: 'DELETE' });
+    if (!resp.ok) throw new Error('Server error ' + resp.status);
+    renderNews();
+  } catch(e) { alert('Ошибка удаления: ' + e.message); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1474,14 +1622,28 @@ function adminLogout() {
   renderNews(); renderDocs();
 }
 
+function toggleMobileMenu() {
+  const menu = document.getElementById('navMobileMenu');
+  const btn = document.getElementById('navHamburger');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('navMobileMenu').classList.remove('open');
+  document.getElementById('navHamburger').classList.remove('open');
+}
+
 // ══════════════════════════════════════════════════════
 // PAGE NAV
 // ══════════════════════════════════════════════════════
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.nav-mobile-menu a').forEach(a => a.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.getElementById('nav-' + id).classList.add('active');
+  const mobileLink = document.getElementById('nav-m-' + id);
+  if (mobileLink) mobileLink.classList.add('active');
   window.scrollTo(0, 0);
   if (id === 'news') renderNews();
   if (id === 'docs') renderDocs();
